@@ -6,7 +6,7 @@ import ChainIndicator from '@/components/common/ChainIndicator'
 import SidebarHeader from '@/components/sidebar/SidebarHeader'
 import SafeList from '@/components/sidebar/SafeList'
 import SidebarNavigation from '@/components/sidebar/SidebarNavigation'
-import SidebarFooter from '@/components/sidebar/SidebarFooter'
+//import SidebarFooter from '@/components/sidebar/SidebarFooter'
 
 import css from './styles.module.css'
 import { trackEvent, OVERVIEW_EVENTS } from '@/services/analytics'
