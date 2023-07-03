@@ -196,8 +196,8 @@ const SafePrivacyPolicy = () => {
       <h3 id="4">4. How We Use Personal Data</h3>
       <h4>4.1. When visiting our website and using {'Rootstock Safe'}</h4>
       <p>
-        When visiting our website or using {'Rootstock Safe'}, we may collect and process personal data. The data will be
-        stored in different instances
+        When visiting our website or using {'Rootstock Safe'}, we may collect and process personal data. The data will
+        be stored in different instances
       </p>
       <ol start={1} className={css.alphaList}>
         <li>

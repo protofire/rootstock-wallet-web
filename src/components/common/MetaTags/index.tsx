@@ -2,8 +2,7 @@ import { IS_PRODUCTION } from '@/config/constants'
 import { ContentSecurityPolicy, StrictTransportSecurity } from '@/config/securityHeaders'
 import { lightPalette, darkPalette } from '@safe-global/safe-react-components'
 
-const descriptionText =
-  'Rootstock Safe is the most trusted platform to manage digital assets on Rootstock.'
+const descriptionText = 'Rootstock Safe is the most trusted platform to manage digital assets on Rootstock.'
 const titleText = 'Rootstock Safe'
 
 const MetaTags = ({ prefetchUrl }: { prefetchUrl: string }) => (
