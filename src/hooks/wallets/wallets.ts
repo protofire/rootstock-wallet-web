@@ -5,7 +5,7 @@ import type { ChainInfo } from '@safe-global/safe-gateway-typescript-sdk'
 import coinbaseModule from '@web3-onboard/coinbase'
 import injectedWalletModule, { ProviderLabel } from '@web3-onboard/injected-wallets'
 import keystoneModule from '@web3-onboard/keystone/dist/index'
-import ledgerModule from '@web3-onboard/ledger'
+import ledgerModule from '@web3-onboard/ledger/dist/index'
 import trezorModule from '@web3-onboard/trezor'
 import walletConnect from '@web3-onboard/walletconnect'
 import tahoModule from '@web3-onboard/taho'
@@ -14,29 +14,38 @@ import pairingModule from '@/services/pairing/module'
 import e2eWalletModule from '@/tests/e2e-wallet'
 import { CGW_NAMES, WALLET_KEYS } from './consts'
 
+const prefersDarkMode = (): boolean => {
+  return window?.matchMedia('(prefers-color-scheme: dark)')?.matches
+}
+
 // We need to modify the module name as onboard dedupes modules with the same label and the WC v1 and v2 modules have the same
 // @see https://github.com/blocknative/web3-onboard/blob/d399e0b76daf7b363d6a74b100b2c96ccb14536c/packages/core/src/store/actions.ts#L419
 // TODO: When removing this, also remove the associated CSS in `onboard.css`
+export const WALLET_CONNECT_V1_MODULE_NAME = 'WalletConnect v1'
 const walletConnectV1 = (): WalletInit => {
   return (helpers) => {
-    const MODULE_LABEL = 'WalletConnect v1'
-
     const walletConnectModule = walletConnect({ version: 1, bridge: WC_BRIDGE })(helpers) as WalletModule
 
-    walletConnectModule.label = MODULE_LABEL
+    walletConnectModule.label = WALLET_CONNECT_V1_MODULE_NAME
 
     return walletConnectModule
   }
 }
 
 const walletConnectV2 = (chain: ChainInfo): WalletInit => {
+  // WalletConnect v2 requires a project ID
+  if (!WC_PROJECT_ID) {
+    return () => null
+  }
+
   return walletConnect({
     version: 2,
     projectId: WC_PROJECT_ID,
     qrModalOptions: {
       themeVariables: {
-        '--w3m-z-index': '1302',
+        '--wcm-z-index': '1302',
       },
+      themeMode: prefersDarkMode() ? 'dark' : 'light',
     },
     requiredChains: [parseInt(chain.chainId)],
   })
@@ -51,8 +60,7 @@ const WALLET_MODULES: { [key in WALLET_KEYS]: (chain: ChainInfo) => WalletInit }
   [WALLET_KEYS.TREZOR]: () => trezorModule({ appUrl: TREZOR_APP_URL, email: TREZOR_EMAIL }),
   [WALLET_KEYS.KEYSTONE]: () => keystoneModule(),
   [WALLET_KEYS.TAHO]: () => tahoModule(),
-  [WALLET_KEYS.COINBASE]: () =>
-    coinbaseModule({ darkMode: !!window?.matchMedia('(prefers-color-scheme: dark)')?.matches }),
+  [WALLET_KEYS.COINBASE]: () => coinbaseModule({ darkMode: prefersDarkMode() }),
 }
 
 export const getAllWallets = (chain: ChainInfo): WalletInit[] => {
