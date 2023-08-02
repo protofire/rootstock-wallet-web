@@ -50,7 +50,7 @@ export const selectAddressBookByChain = createSelector(
   [selectAllAddressBooks, (_, chainId: string) => chainId],
   (allAddressBooks, chainId): AddressBook => {
     const chainAddresses = allAddressBooks[chainId]
-    const validAddresses = pickBy(chainAddresses, (_, key) => validateAddress(key) === undefined)
+    const validAddresses = pickBy(chainAddresses, (_, key) => validateAddress(key, chainId) === undefined)
     return chainId ? validAddresses || {} : {}
   },
 )

@@ -6,6 +6,7 @@ import { CREATE_SAFE_EVENTS, trackEvent } from '@/services/analytics'
 import { updateAddressBook } from '@/components/new-safe/create/logic/address-book'
 import { useAppDispatch } from '@/store'
 import useChainId from '@/hooks/useChainId'
+import { checksumAddress } from '@/utils/addresses'
 import { usePendingSafe } from './usePendingSafe'
 
 const useSafeCreationEffects = ({
@@ -49,7 +50,7 @@ const useSafeCreationEffects = ({
       dispatch(
         updateAddressBook(
           chainId,
-          pendingSafe.safeAddress,
+          checksumAddress(pendingSafe.safeAddress, chainId),
           pendingSafe.name,
           pendingSafe.owners,
           pendingSafe.threshold,

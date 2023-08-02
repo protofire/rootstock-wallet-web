@@ -1,24 +1,25 @@
 import { parsePrefixedAddress, sameAddress, isChecksummedAddress } from './addresses'
 import { safeFormatUnits, safeParseUnits } from './formatters'
 
-export const validateAddress = (address: string) => {
+export const validateAddress = (address: string, chainId?: string) => {
   const ADDRESS_RE = /^0x[0-9a-f]{40}$/i
 
   if (!ADDRESS_RE.test(address)) {
     return 'Invalid address format'
   }
 
-  if (!isChecksummedAddress(address)) {
+  if (!isChecksummedAddress(address, chainId)) {
     return 'Invalid address checksum'
   }
 }
 
-export const isValidAddress = (address: string): boolean => validateAddress(address) === undefined
+export const isValidAddress = (address: string, chainId?: string): boolean =>
+  validateAddress(address, chainId) === undefined
 
 export const validatePrefixedAddress =
   (chainShortName?: string) =>
-  (value: string): string | undefined => {
-    const { prefix, address } = parsePrefixedAddress(value)
+  (value: string, chainId?: string): string | undefined => {
+    const { prefix, address } = parsePrefixedAddress(value, chainId)
 
     if (prefix) {
       if (prefix !== chainShortName) {
@@ -26,7 +27,7 @@ export const validatePrefixedAddress =
       }
     }
 
-    return validateAddress(address)
+    return validateAddress(address, chainId)
   }
 
 export const uniqueAddress =

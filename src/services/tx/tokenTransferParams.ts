@@ -2,7 +2,7 @@ import type { MetaTransactionData } from '@safe-global/safe-core-sdk-types'
 import type { DecodedDataResponse } from '@safe-global/safe-gateway-typescript-sdk'
 import { safeParseUnits } from '@/utils/formatters'
 import { Interface } from '@ethersproject/abi'
-import { sameAddress } from '@/utils/addresses'
+import { checksumAddress, sameAddress } from '@/utils/addresses'
 
 // CryptoKitties Contract Addresses by network
 // This is an exception made for a popular NFT that's not ERC721 standard-compatible,
@@ -10,9 +10,10 @@ import { sameAddress } from '@/utils/addresses'
 // the standard `safeTransferFrom` method.
 const CryptoKittiesContract = '0x06012c8cf97bead5deae237070f9587f8e7a266d'
 
-const encodeERC20TransferData = (to: string, value: string): string => {
+const encodeERC20TransferData = (_to: string, value: string): string => {
   const erc20Abi = ['function transfer(address to, uint256 value)']
   const contractInterface = new Interface(erc20Abi)
+  const to = checksumAddress(_to)
   return contractInterface.encodeFunctionData('transfer', [to, value])
 }
 

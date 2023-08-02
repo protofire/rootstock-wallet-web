@@ -7,17 +7,18 @@ import useIntervalCounter from '../useIntervalCounter'
 import useSafeInfo from '../useSafeInfo'
 import { Errors, logError } from '@/services/exceptions'
 import { POLLING_INTERVAL } from '@/config/constants'
+import { checksumAddress, sameAddress } from '@/utils/addresses'
 
 export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
   const address = useSafeAddress()
   const chainId = useChainId()
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
   const { safe } = useSafeInfo()
-  const isStoredSafeValid = safe.chainId === chainId && safe.address.value === address
+  const isStoredSafeValid = safe.chainId === chainId && sameAddress(safe.address.value, address)
 
   const [data, error, loading] = useAsync<SafeInfo>(() => {
     if (!chainId || !address) return
-    return getSafeInfo(chainId, address)
+    return getSafeInfo(chainId, checksumAddress(address))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, address, pollCount])
 

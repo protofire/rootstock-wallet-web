@@ -9,7 +9,7 @@ import { validateAddress } from '@/utils/validation'
 import type { SafeAppDataWithPermissions } from './types'
 import { SafeAppsTag } from '@/config/constants'
 
-const validateTransaction = (t: BaseTransaction): boolean => {
+const validateTransaction = (t: BaseTransaction, chainId?: string): boolean => {
   if (!['string', 'number'].includes(typeof t.value)) {
     return false
   }
@@ -18,11 +18,12 @@ const validateTransaction = (t: BaseTransaction): boolean => {
     return false
   }
 
-  const isAddressValid = validateAddress(t.to) === undefined
+  const isAddressValid = validateAddress(t.to, chainId) === undefined
   return isAddressValid && !!t.data && typeof t.data === 'string'
 }
 
-export const isTxValid = (txs: BaseTransaction[]) => txs.length && txs.every((t) => validateTransaction(t))
+export const isTxValid = (txs: BaseTransaction[], chainId?: string) =>
+  txs.length && txs.every((t) => validateTransaction(t, chainId))
 
 export const getInteractionTitle = (value?: string, chain?: ChainInfo) => {
   const { decimals, symbol } = chain!.nativeCurrency

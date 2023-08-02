@@ -93,7 +93,7 @@ export const isOffchainEIP1271Supported = (
   const isHandledByFallbackHandler = gte(version, EIP1271_FALLBACK_HANDLER_SUPPORTED_SAFE_VERSION)
   if (isHandledByFallbackHandler) {
     // We only check if any fallback Handler is set as we expect / assume that users who overwrite the fallback handler by a custom one know what they are doing
-    return fallbackHandler !== null && isValidAddress(fallbackHandler.value)
+    return fallbackHandler !== null && isValidAddress(fallbackHandler.value, chain.chainId)
   }
 
   // check if Safe version supports EIP-1271

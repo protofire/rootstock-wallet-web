@@ -2,6 +2,7 @@ import { getTransactionQueue, type TransactionListPage } from '@safe-global/safe
 import { useAppSelector } from '@/store'
 import useAsync from './useAsync'
 import { selectTxQueue, selectQueuedTransactionsByNonce } from '@/store/txQueueSlice'
+import { checksumAddress } from '@/utils/addresses'
 import useSafeInfo from './useSafeInfo'
 
 const useTxQueue = (
@@ -17,7 +18,7 @@ const useTxQueue = (
   // If pageUrl is passed, load a new queue page from the API
   const [page, error, loading] = useAsync<TransactionListPage>(() => {
     if (!pageUrl || !safeLoaded) return
-    return getTransactionQueue(chainId, safeAddress, pageUrl)
+    return getTransactionQueue(chainId, checksumAddress(safeAddress), pageUrl)
   }, [chainId, safeAddress, safeLoaded, pageUrl])
 
   // The latest page of the queue is always in the store

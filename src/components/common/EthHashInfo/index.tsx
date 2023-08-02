@@ -8,6 +8,7 @@ import { getBlockExplorerLink } from '@/utils/chains'
 import SrcEthHashInfo, { type EthHashInfoProps } from './SrcEthHashInfo'
 import { selectAddedSafes } from '@/store/addedSafesSlice'
 import useSafeAddress from '@/hooks/useSafeAddress'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const EthHashInfo = ({
   showName = true,
@@ -20,8 +21,9 @@ const EthHashInfo = ({
   const addedSafes = useAppSelector((state) => selectAddedSafes(state, currentChainId)) || {}
   const chain = useAppSelector((state) => selectChainById(state, props.chainId || currentChainId))
   const addressBook = useAddressBook()
-  const link = chain ? getBlockExplorerLink(chain, props.address) : undefined
-  const name = showName ? addressBook[props.address] || props.name : undefined
+  const address = useMemo(() => toChecksumAddress(props.address, currentChainId), [props.address, currentChainId])
+  const link = chain ? getBlockExplorerLink(chain, address) : undefined
+  const name = showName ? addressBook[address] || props.name : undefined
   const showEmoji =
     settings.addressEmojis &&
     props.showAvatar !== false &&
@@ -35,6 +37,7 @@ const EthHashInfo = ({
       showPrefix={settings.shortName.show}
       copyPrefix={settings.shortName.copy}
       {...props}
+      address={address}
       name={name}
       customAvatar={props.customAvatar}
       ExplorerButtonProps={{ title: link?.title || '', href: link?.href || '' }}
