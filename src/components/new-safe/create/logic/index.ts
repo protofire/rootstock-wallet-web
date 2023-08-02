@@ -29,6 +29,7 @@ import { LATEST_SAFE_VERSION } from '@/config/constants'
 import { EMPTY_DATA, ZERO_ADDRESS } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
 import { formatError } from '@/utils/formatters'
 import { sponsoredCall } from '@/services/tx/relaying'
+import { checksumAddress } from '@/utils/addresses'
 
 export type SafeCreationProps = {
   owners: string[]
@@ -49,7 +50,7 @@ export const getSafeDeployProps = (
   return {
     safeAccountConfig: {
       threshold: safeParams.threshold,
-      owners: safeParams.owners,
+      owners: safeParams.owners.map((owner) => checksumAddress(owner)),
       fallbackHandler: readOnlyFallbackHandlerContract.getAddress(),
     },
     safeDeploymentConfig: {
@@ -121,7 +122,7 @@ export const getSafeCreationTxInfo = async (
   const readOnlyProxyContract = getReadOnlyProxyFactoryContract(chain.chainId)
 
   const data = encodeSafeCreationTx({
-    owners: owners.map((owner) => owner.address),
+    owners: owners.map((owner) => checksumAddress(owner.address)),
     threshold,
     saltNonce,
     chain,
@@ -155,7 +156,7 @@ export const estimateSafeCreationGas = async (
 
 export const pollSafeInfo = async (chainId: string, safeAddress: string): Promise<SafeInfo> => {
   // exponential delay between attempts for around 4 min
-  return backOff(() => getSafeInfo(chainId, safeAddress), {
+  return backOff(() => getSafeInfo(chainId, checksumAddress(safeAddress)), {
     startingDelay: 750,
     maxDelay: 20000,
     numOfAttempts: 19,

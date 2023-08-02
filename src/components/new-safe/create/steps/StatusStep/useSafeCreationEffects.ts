@@ -7,6 +7,7 @@ import { updateAddressBook } from '@/components/new-safe/create/logic/address-bo
 import { useAppDispatch } from '@/store'
 import useChainId from '@/hooks/useChainId'
 import type { PendingSafeData } from '@/components/new-safe/create/steps/StatusStep/index'
+import { checksumAddress } from '@/utils/addresses'
 
 const useSafeCreationEffects = ({
   pendingSafe,
@@ -31,7 +32,7 @@ const useSafeCreationEffects = ({
         dispatch(
           updateAddressBook(
             chainId,
-            pendingSafe.safeAddress,
+            checksumAddress(pendingSafe.safeAddress, chainId),
             pendingSafe.name,
             pendingSafe.owners,
             pendingSafe.threshold,

@@ -30,6 +30,7 @@ import { LOAD_SAFE_EVENTS, trackEvent } from '@/services/analytics'
 import { AppRoutes } from '@/config/routes'
 import MUILink from '@mui/material/Link'
 import Link from 'next/link'
+import { checksumAddress } from '@/utils/addresses'
 
 enum Field {
   name = 'name',
@@ -73,7 +74,7 @@ const SetAddressStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeForm
     }
 
     try {
-      await getSafeInfo(currentChainId, address)
+      await getSafeInfo(currentChainId, checksumAddress(address))
     } catch (error) {
       return 'Address given is not a valid Safe Account address'
     }

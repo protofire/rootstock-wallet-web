@@ -26,6 +26,7 @@ import { ExecutionMethodSelector, ExecutionMethod } from '@/components/tx/Execut
 import { useLeastRemainingRelays } from '@/hooks/useRemainingRelays'
 import classnames from 'classnames'
 import { hasRemainingRelays } from '@/utils/relaying'
+import { checksumAddress } from '@/utils/addresses'
 
 const ReviewStep = ({ data, onSubmit, onBack, setStep }: StepRenderProps<NewSafeFormData>) => {
   const isWrongChain = useIsWrongChain()
@@ -47,7 +48,7 @@ const ReviewStep = ({ data, onSubmit, onBack, setStep }: StepRenderProps<NewSafe
 
   const safeParams = useMemo(() => {
     return {
-      owners: data.owners.map((owner) => owner.address),
+      owners: data.owners.map((owner) => checksumAddress(owner.address)),
       threshold: data.threshold,
       saltNonce,
     }
@@ -72,7 +73,7 @@ const ReviewStep = ({ data, onSubmit, onBack, setStep }: StepRenderProps<NewSafe
     const props = {
       safeAccountConfig: {
         threshold: data.threshold,
-        owners: data.owners.map((owner) => owner.address),
+        owners: data.owners.map((owner) => checksumAddress(owner.address)),
         fallbackHandler: readOnlyFallbackHandlerContract.getAddress(),
       },
       safeDeploymentConfig: {

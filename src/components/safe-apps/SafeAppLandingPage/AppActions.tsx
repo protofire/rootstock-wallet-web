@@ -174,7 +174,9 @@ const getDefaultSafe = (
   lastUsedSafe = '',
 ): CompatibleSafesType => {
   // as a first option, we use the last used Safe in the provided chain
-  const lastViewedSafe = compatibleSafes.find((safe) => safe.address === parsePrefixedAddress(lastUsedSafe).address)
+  const lastViewedSafe = compatibleSafes.find(
+    (safe) => safe.address === parsePrefixedAddress(lastUsedSafe, chainId).address,
+  )
 
   if (lastViewedSafe) {
     return lastViewedSafe

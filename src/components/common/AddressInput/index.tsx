@@ -94,14 +94,16 @@ const AddressInput = ({ name, validate, required = true, deps, ...props }: Addre
               const cleanValue = cleanInputValue(value)
               rawValueRef.current = cleanValue
               // This also checksums the address
-              return parsePrefixedAddress(cleanValue).address
+              return parsePrefixedAddress(cleanValue, currentChain?.chainId).address
             },
 
             validate: async () => {
               const value = rawValueRef.current
               if (value) {
                 setIsValidating(true)
-                const result = validatePrefixed(value) || (await validate?.(parsePrefixedAddress(value).address))
+                const result =
+                  validatePrefixed(value, currentChain?.chainId) ||
+                  (await validate?.(parsePrefixedAddress(value, currentChain?.chainId).address))
                 setIsValidating(false)
                 return result
               }

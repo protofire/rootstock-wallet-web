@@ -13,7 +13,7 @@ export const hasValidAbHeader = (header: string[]) => {
 }
 
 export const hasValidAbEntryAddresses = (entries: string[][]) => {
-  return entries.every((entry) => entry.length >= 1 && !validateAddress(entry[0]))
+  return entries.every((entry) => entry.length >= 1 && !validateAddress(entry[0], entry[2]))
 }
 
 export const hasValidAbNames = (entries: string[][]) => {
@@ -47,7 +47,7 @@ export const abOnUploadValidator = ({ data, errors }: ParseResult<string[]>): st
 
   // An entry has invalid address
   if (!hasValidAbEntryAddresses(entries)) {
-    const i = entries.findIndex((entry) => (entry.length >= 1 ? validateAddress(entry[0]) : true))
+    const i = entries.findIndex((entry) => (entry.length >= 1 ? validateAddress(entry[0], entry[2]) : true))
     return `Address book contains an invalid address on row ${i + 2}`
   }
 

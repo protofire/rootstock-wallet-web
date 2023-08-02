@@ -13,6 +13,7 @@ import useWallet from './wallets/useWallet'
 import { useSafeSDK } from './coreSDK/safeCoreSDK'
 import useIsSafeOwner from './useIsSafeOwner'
 import { Errors, logError } from '@/services/exceptions'
+import { checksumAddress } from '@/utils/addresses'
 
 const getEncodedSafeTx = (safeSDK: Safe, safeTx: SafeTransaction, from?: string): string => {
   const EXEC_TX_METHOD = 'execTransaction'
@@ -69,7 +70,7 @@ const useGasLimit = (
 
     return web3ReadOnly
       .estimateGas({
-        to: safeAddress,
+        to: checksumAddress(safeAddress),
         from: walletAddress,
         data: encodedSafeTx,
         type: operationType,
