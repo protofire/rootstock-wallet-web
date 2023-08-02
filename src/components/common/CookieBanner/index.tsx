@@ -55,7 +55,7 @@ export const CookieBanner = ({
   }
 
   const handleAcceptAll = () => {
-    setValue(CookieType.UPDATES, true)
+    // setValue(CookieType.UPDATES, true)
     setValue(CookieType.ANALYTICS, true)
     setTimeout(handleAccept, 300)
   }
@@ -73,7 +73,7 @@ export const CookieBanner = ({
           <Grid item xs>
             <Typography variant="body2" mb={2}>
               By clicking &quot;Accept all&quot; you agree to the use of the tools listed below and their corresponding
-              cookies. <ExternalLink href={AppRoutes.cookie}>Cookie policy</ExternalLink>
+              cookies. {/* <ExternalLink href={AppRoutes.cookie}>Cookie policy</ExternalLink> */}
             </Typography>
 
             <Grid container alignItems="center" gap={4}>
@@ -84,7 +84,7 @@ export const CookieBanner = ({
                   <Typography variant="body2">Locally stored data for core functionality</Typography>
                 </Box>
 
-                <Box mb={2}>
+                {/* <Box mb={2}>
                   <CookieCheckbox
                     checkboxProps={{ ...register(CookieType.UPDATES), id: 'beamer' }}
                     label="Beamer"
@@ -92,7 +92,7 @@ export const CookieBanner = ({
                   />
                   <br />
                   <Typography variant="body2">New features and product announcements</Typography>
-                </Box>
+                </Box> */}
 
                 <Box>
                   <CookieCheckbox
