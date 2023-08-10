@@ -60,7 +60,11 @@ export const EthHashInfo = ({
           </Box>
 
           {showCopyButton && (
-            <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldPrefix && copyPrefix} />
+            <CopyAddressButton
+              prefix={prefix}
+              address={address.toLowerCase()}
+              copyPrefix={shouldPrefix && copyPrefix}
+            />
           )}
 
           {hasExplorer && ExplorerButtonProps && <ExplorerButton {...ExplorerButtonProps} />}
