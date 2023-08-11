@@ -67,7 +67,7 @@ index 12bf9df..64071cf 100644
 -    const { address } = await eth.getAddress(dPath);
 +    let { address } = await eth.getAddress(dPath);
 +    //Matching rootstock checksum
-+    address = toChecksumAddress(toLowerCase());
++    address = toChecksumAddress(address);
      return {
          derivationPath: dPath,
          address,
