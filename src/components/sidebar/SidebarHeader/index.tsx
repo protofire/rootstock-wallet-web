@@ -88,7 +88,7 @@ const SafeHeader = (): ReactElement => {
           </Track>
 
           <Track {...OVERVIEW_EVENTS.COPY_ADDRESS}>
-            <CopyButton text={addressCopyText} className={css.iconButton}>
+            <CopyButton text={addressCopyText.toLowerCase()} className={css.iconButton}>
               <SvgIcon component={CopyIconBold} inheritViewBox color="primary" fontSize="small" />
             </CopyButton>
           </Track>
