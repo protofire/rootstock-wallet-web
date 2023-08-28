@@ -24,12 +24,12 @@ export const ReviewOwnerTxStep = ({ data, onSubmit }: { data: ChangeOwnerData; o
   const [safeTx, safeTxError] = useAsync<SafeTransaction>(() => {
     if (removedOwner) {
       return createSwapOwnerTx({
-        newOwnerAddress: newOwner.address,
-        oldOwnerAddress: removedOwner.address,
+        newOwnerAddress: newOwner.address.toLowerCase(),
+        oldOwnerAddress: removedOwner.address.toLowerCase(),
       })
     } else {
       return createAddOwnerTx({
-        ownerAddress: newOwner.address,
+        ownerAddress: newOwner.address.toLowerCase(),
         threshold,
       })
     }
