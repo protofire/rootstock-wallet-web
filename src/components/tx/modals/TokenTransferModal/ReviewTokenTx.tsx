@@ -9,6 +9,7 @@ import TokenIcon from '@/components/common/TokenIcon'
 import ReviewSpendingLimitTx from '@/components/tx/modals/TokenTransferModal/ReviewSpendingLimitTx'
 import ReviewMultisigTx from '@/components/tx/modals/TokenTransferModal/ReviewMultisigTx'
 import { formatAmountPrecise } from '@/utils/formatNumber'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 export const TokenTransferReview = ({
   amount,
@@ -34,6 +35,8 @@ export const TokenTransferReview = ({
 }
 
 const ReviewTokenTx = ({ params, onSubmit }: TokenTransferModalProps): ReactElement => {
+  //UPDATE: update address formatting to bypass checksum error.
+  params.recipient = toChecksumAddress(params.recipient)
   const isSpendingLimitTx = params.type === SendTxType.spendingLimit
 
   return isSpendingLimitTx ? (

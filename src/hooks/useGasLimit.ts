@@ -18,10 +18,11 @@ import { checksumAddress } from '@/utils/addresses'
 const getEncodedSafeTx = (safeSDK: Safe, safeTx: SafeTransaction, from?: string): string => {
   const EXEC_TX_METHOD = 'execTransaction'
 
+  //UPDATE: pass lowercase to ethers library due to unsupported EIP-1191
   return safeSDK
     .getContractManager()
     .safeContract.encode(EXEC_TX_METHOD, [
-      safeTx.data.to,
+      safeTx.data.to.toLowerCase(),
       safeTx.data.value,
       safeTx.data.data,
       safeTx.data.operation,
