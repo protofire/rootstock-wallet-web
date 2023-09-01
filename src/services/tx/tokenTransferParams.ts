@@ -20,7 +20,8 @@ const encodeERC20TransferData = (_to: string, value: string): string => {
 const encodeERC721TransferData = (from: string, to: string, tokenId: string): string => {
   const erc721Abi = ['function safeTransferFrom(address from, address to, uint256 tokenId)']
   const contractInterface = new Interface(erc721Abi)
-  return contractInterface.encodeFunctionData('safeTransferFrom', [from, to, tokenId])
+  // UPDATE: pass address in the supported format to ethers library
+  return contractInterface.encodeFunctionData('safeTransferFrom', [checksumAddress(from), checksumAddress(to), tokenId])
 }
 
 export const createTokenTransferParams = (
