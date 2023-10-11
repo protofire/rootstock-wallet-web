@@ -13,6 +13,7 @@ import type { RemoveOwnerFlowProps } from '.'
 import EthHashInfo from '@/components/common/EthHashInfo'
 
 import commonCss from '@/components/tx-flow/common/styles.module.css'
+import { checksumAddress } from '@/utils/addresses'
 
 export const ReviewRemoveOwner = ({ params }: { params: RemoveOwnerFlowProps }): ReactElement => {
   const addressBook = useAddressBook()
@@ -21,7 +22,9 @@ export const ReviewRemoveOwner = ({ params }: { params: RemoveOwnerFlowProps }):
   const { removedOwner, threshold } = params
 
   useEffect(() => {
-    createRemoveOwnerTx({ ownerAddress: removedOwner.address, threshold }).then(setSafeTx).catch(setSafeTxError)
+    createRemoveOwnerTx({ ownerAddress: checksumAddress(removedOwner.address), threshold })
+      .then(setSafeTx)
+      .catch(setSafeTxError)
   }, [removedOwner.address, setSafeTx, setSafeTxError, threshold])
 
   const newOwnerLength = safe.owners.length - 1

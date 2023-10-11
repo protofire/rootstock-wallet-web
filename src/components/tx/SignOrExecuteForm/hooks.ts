@@ -19,6 +19,7 @@ import { getSafeTxGas, getRecommendedNonce } from '@/services/tx/tx-sender/recom
 import useAsync from '@/hooks/useAsync'
 import { useUpdateBatch } from '@/hooks/useDraftBatch'
 import { type Transaction, type TransactionDetails } from '@safe-global/safe-gateway-typescript-sdk'
+import { checksumAddress } from '@/utils/addresses'
 
 type TxActions = {
   addToBatch: (safeTx?: SafeTransaction, origin?: string) => Promise<string>
@@ -64,7 +65,10 @@ export const useTxActions = (): TxActions => {
       })
     }
 
-    const addToBatch: TxActions['addToBatch'] = async (safeTx, origin) => {
+    const addToBatch: TxActions['addToBatch'] = async (_safeTx, origin) => {
+      const safeTx = _safeTx
+        ? { ..._safeTx, data: { ..._safeTx.data, to: checksumAddress(_safeTx.data.to) } }
+        : undefined
       assertTx(safeTx)
       assertWallet(wallet)
 
@@ -85,7 +89,8 @@ export const useTxActions = (): TxActions => {
       return await dispatchTxSigning(safeTx, version, onboard, chainId, txId)
     }
 
-    const signTx: TxActions['signTx'] = async (safeTx, txId, origin, transaction) => {
+    const signTx: TxActions['signTx'] = async (_safeTx, txId, origin, transaction) => {
+      let safeTx = _safeTx ? { ..._safeTx, data: { ..._safeTx.data, to: checksumAddress(_safeTx.data.to) } } : undefined
       assertTx(safeTx)
       assertWallet(wallet)
       assertOnboard(onboard)
@@ -108,7 +113,9 @@ export const useTxActions = (): TxActions => {
       return tx.txId
     }
 
-    const executeTx: TxActions['executeTx'] = async (txOptions, safeTx, txId, origin, isRelayed, transaction) => {
+    const executeTx: TxActions['executeTx'] = async (txOptions, _safeTx, txId, origin, isRelayed, transaction) => {
+      let safeTx = _safeTx ? { ..._safeTx, data: { ..._safeTx.data, to: checksumAddress(_safeTx.data.to) } } : undefined
+
       assertTx(safeTx)
       assertWallet(wallet)
       assertOnboard(onboard)

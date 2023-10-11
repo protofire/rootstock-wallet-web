@@ -1,4 +1,4 @@
-import { type ReactElement } from 'react'
+import { type ReactElement, useMemo } from 'react'
 import useAddressBook from '@/hooks/useAddressBook'
 import useChainId from '@/hooks/useChainId'
 import { useAppSelector } from '@/store'

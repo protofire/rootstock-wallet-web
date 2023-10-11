@@ -163,7 +163,10 @@ const AddressInput = ({
             const value = rawValueRef.current
 
             if (value) {
-              return validatePrefixed(value, currentChain?.chainId) || (await validate?.(parsePrefixedAddress(value, currentChain?.chainId).address))
+              return (
+                validatePrefixed(value, currentChain?.chainId) ||
+                (await validate?.(parsePrefixedAddress(value, currentChain?.chainId).address))
+              )
             }
           },
 

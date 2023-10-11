@@ -14,6 +14,7 @@ import PlusIcon from '@/public/images/common/plus.svg'
 import MinusIcon from '@/public/images/common/minus.svg'
 import EthHashInfo from '@/components/common/EthHashInfo'
 import commonCss from '@/components/tx-flow/common/styles.module.css'
+import { checksumAddress } from '@/utils/addresses'
 
 export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwnerFlowProps }) => {
   const dispatch = useAppDispatch()
@@ -25,11 +26,11 @@ export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwn
   useEffect(() => {
     const promise = removedOwner
       ? createSwapOwnerTx({
-          newOwnerAddress: newOwner.address,
-          oldOwnerAddress: removedOwner.address,
+          newOwnerAddress: checksumAddress(newOwner.address),
+          oldOwnerAddress: checksumAddress(removedOwner.address),
         })
       : createAddOwnerTx({
-          ownerAddress: newOwner.address,
+          ownerAddress: checksumAddress(newOwner.address),
           threshold,
         })
 

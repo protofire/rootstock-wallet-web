@@ -68,7 +68,11 @@ const Footer = (): ReactElement | null => {
               <FooterLink href={getHref(AppRoutes.settings.index)}>Preferences</FooterLink>
             </li>
           </>
-        ) : null}
+        ) : (
+          <li>
+            <FooterLink href={getHref(AppRoutes.settings.index)}>Preferences</FooterLink>
+          </li>
+        )}
 
         <li>
           <ExternalLink href={`${packageJson.homepage}/releases/tag/v${packageJson.version}`}>

@@ -10,8 +10,8 @@ import { selectCookies, CookieType, saveCookieConsent } from '@/store/cookiesSli
 import { selectCookieBanner, openCookieBanner, closeCookieBanner } from '@/store/popupSlice'
 
 import css from './styles.module.css'
-import { AppRoutes } from '@/config/routes'
-import ExternalLink from '../ExternalLink'
+// import { AppRoutes } from '@/config/routes'
+// import ExternalLink from '../ExternalLink'
 
 const COOKIE_WARNING: Record<CookieType, string> = {
   [CookieType.NECESSARY]: '',

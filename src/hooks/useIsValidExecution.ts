@@ -13,6 +13,7 @@ import useSafeInfo from '@/hooks/useSafeInfo'
 import useWallet from '@/hooks/wallets/useWallet'
 import { encodeSignatures } from '@/services/tx/encodeSignatures'
 import useIsSafeOwner from '@/hooks/useIsSafeOwner'
+import { checksumAddress } from '@/utils/addresses'
 
 const isContractError = (error: EthersError) => {
   if (!error.reason) return false
@@ -79,7 +80,7 @@ const useIsValidExecution = (
        * This also fixes the over-fetching issue of the monkey patched provider.
        */
       return safeContract.contract.callStatic.execTransaction(
-        safeTx.data.to,
+        checksumAddress(safeTx.data.to),
         safeTx.data.value,
         safeTx.data.data,
         safeTx.data.operation,
