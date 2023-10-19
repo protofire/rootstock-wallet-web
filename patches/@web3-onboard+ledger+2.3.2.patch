@@ -1,5 +1,5 @@
 diff --git a/node_modules/@web3-onboard/ledger/dist/index.js b/node_modules/@web3-onboard/ledger/dist/index.js
-index 12bf9df..64071cf 100644
+index 12bf9df..17ccb21 100644
 --- a/node_modules/@web3-onboard/ledger/dist/index.js
 +++ b/node_modules/@web3-onboard/ledger/dist/index.js
 @@ -1,7 +1,11 @@
@@ -9,8 +9,8 @@ index 12bf9df..64071cf 100644
 +
  const LEDGER_LIVE_PATH = `m/44'/60'`;
  const LEDGER_DEFAULT_PATH = `m/44'/60'/0'`;
-+const ROOTSTOCK = `m/44'/137'/0'/0'`;
-+const ROOTSTOCK_TEST = `m/44'/37310'/0'/0'`;
++const ROOTSTOCK = `m/44'/137'/0'/0`;
++const ROOTSTOCK_TEST = `m/44'/37310'/0'/0`;
  const DEFAULT_BASE_PATHS = [
      {
          label: 'Ledger Live',
