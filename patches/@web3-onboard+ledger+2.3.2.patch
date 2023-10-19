@@ -1,23 +1,25 @@
 diff --git a/node_modules/@web3-onboard/ledger/dist/index.js b/node_modules/@web3-onboard/ledger/dist/index.js
-index 12bf9df..64071cf 100644
+index 12bf9df..01fb4f1 100644
 --- a/node_modules/@web3-onboard/ledger/dist/index.js
 +++ b/node_modules/@web3-onboard/ledger/dist/index.js
-@@ -1,7 +1,11 @@
+@@ -1,7 +1,12 @@
  // these cannot be dynamically imported
  import { TypedDataUtils } from '@metamask/eth-sig-util';
 +import { stripHexPrefix, keccak } from 'ethereumjs-util'
 +
  const LEDGER_LIVE_PATH = `m/44'/60'`;
  const LEDGER_DEFAULT_PATH = `m/44'/60'/0'`;
-+const ROOTSTOCK = `m/44'/137'/0'/0'`;
-+const ROOTSTOCK_TEST = `m/44'/37310'/0'/0'`;
++const ROOTSTOCK = `m/44'/137'/0'/0`;
++const ROOTSTOCK_TEST = `m/44'/37310'/0'/0`;
++
  const DEFAULT_BASE_PATHS = [
      {
          label: 'Ledger Live',
-@@ -10,16 +14,44 @@ const DEFAULT_BASE_PATHS = [
+@@ -10,16 +15,44 @@ const DEFAULT_BASE_PATHS = [
      {
          label: 'Ledger Legacy',
          value: LEDGER_DEFAULT_PATH
+-    }
 +    },
 +    {
 +        label: 'Rootstock Path',
@@ -26,7 +28,7 @@ index 12bf9df..64071cf 100644
 +    {
 +        label: 'Rootstock Testnet Path',
 +        value: ROOTSTOCK_TEST
-     }
++    },
  ];
  const assets = [
      {
@@ -60,7 +62,7 @@ index 12bf9df..64071cf 100644
  /**
   * Returns the correct ledger transport based on browser compatibility for webUSB.
   * @returns
-@@ -31,7 +63,9 @@ const getAccount = async (derivationPath, asset, index, provider, eth) => {
+@@ -31,7 +64,9 @@ const getAccount = async (derivationPath, asset, index, provider, eth) => {
      const dPath = derivationPath === LEDGER_LIVE_PATH
          ? `${derivationPath}/${index}'/0/0`
          : `${derivationPath}/${index}`;
@@ -71,14 +73,20 @@ index 12bf9df..64071cf 100644
      return {
          derivationPath: dPath,
          address,
-@@ -95,7 +129,9 @@ function ledger({ customNetwork, filter } = {}) {
+@@ -95,8 +130,14 @@ function ledger({ customNetwork, filter } = {}) {
                          // Checks to see if this is a custom derivation path
                          // If it is then just return the single account
                          if (derivationPath !== LEDGER_LIVE_PATH &&
 -                            derivationPath !== LEDGER_DEFAULT_PATH) {
+-                            const { address } = await eth.getAddress(derivationPath);
 +                            derivationPath !== LEDGER_DEFAULT_PATH &&
 +                            derivationPath !== ROOTSTOCK &&
-+                            derivationPath !== ROOTSTOCK_TEST) {
-                             const { address } = await eth.getAddress(derivationPath);
++                            derivationPath !== ROOTSTOCK_TEST
++                            ) {
++                            let { address } = await eth.getAddress(derivationPath);
++                            if(derivationPath.includes("m/44'/137") || derivationPath.includes("m/44'/37310")){
++                                address = toChecksumAddress(address)
++                              }
                              return [
                                  {
+                                     derivationPath,
