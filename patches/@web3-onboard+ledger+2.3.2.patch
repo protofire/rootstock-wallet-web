@@ -1,5 +1,5 @@
 diff --git a/node_modules/@web3-onboard/ledger/dist/index.js b/node_modules/@web3-onboard/ledger/dist/index.js
-index 12bf9df..17ccb21 100644
+index 12bf9df..cf65257 100644
 --- a/node_modules/@web3-onboard/ledger/dist/index.js
 +++ b/node_modules/@web3-onboard/ledger/dist/index.js
 @@ -1,7 +1,11 @@
@@ -71,14 +71,22 @@ index 12bf9df..17ccb21 100644
      return {
          derivationPath: dPath,
          address,
-@@ -95,7 +129,9 @@ function ledger({ customNetwork, filter } = {}) {
+@@ -95,8 +129,16 @@ function ledger({ customNetwork, filter } = {}) {
                          // Checks to see if this is a custom derivation path
                          // If it is then just return the single account
                          if (derivationPath !== LEDGER_LIVE_PATH &&
 -                            derivationPath !== LEDGER_DEFAULT_PATH) {
+-                            const { address } = await eth.getAddress(derivationPath);
 +                            derivationPath !== LEDGER_DEFAULT_PATH &&
 +                            derivationPath !== ROOTSTOCK &&
-+                            derivationPath !== ROOTSTOCK_TEST) {
-                             const { address } = await eth.getAddress(derivationPath);
++                            derivationPath !== ROOTSTOCK_TEST &&
++                            derivationPath !== ROOTSTOCK_LEGACY &&
++                            derivationPath !== ROOTSTOCK_TEST_LEGACY
++                            ) {
++                            let { address } = await eth.getAddress(derivationPath);
++                            if (derivationPath.includes("m/44'/137") || derivationPath.includes("m/44'/37310")) {
++                              address = toChecksumAddress(address);
++                            }
                              return [
                                  {
+                                     derivationPath,
