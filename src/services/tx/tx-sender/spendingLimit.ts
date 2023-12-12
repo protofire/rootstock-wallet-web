@@ -6,6 +6,7 @@ import { createAddDelegateTx, createResetAllowanceTx, createSetAllowanceTx } fro
 import { parseUnits } from '@ethersproject/units'
 import { currentMinutes } from '@/utils/date'
 import { createMultiSendCallOnlyTx } from '@/services/tx/tx-sender/create'
+import { checksumAddress } from '@/utils/addresses'
 
 export type NewSpendingLimitData = {
   beneficiary: string
@@ -26,6 +27,7 @@ export const createNewSpendingLimitTx = async (
   if (!spendingLimitAddress || !sdk) return
 
   const txs: MetaTransactionData[] = []
+  data.beneficiary = checksumAddress(data.beneficiary)
 
   const isSpendingLimitEnabled = await sdk.isModuleEnabled(spendingLimitAddress)
   if (!isSpendingLimitEnabled) {
