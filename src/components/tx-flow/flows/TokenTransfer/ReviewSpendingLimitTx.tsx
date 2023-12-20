@@ -23,6 +23,7 @@ import { WrongChainWarning } from '@/components/tx/WrongChainWarning'
 import { asError } from '@/services/exceptions/utils'
 import TxCard from '@/components/tx-flow/common/TxCard'
 import { TxModalContext } from '@/components/tx-flow'
+import { checksumAddress } from '@/utils/addresses'
 
 export type SpendingLimitTxParams = {
   safeAddress: string
@@ -56,7 +57,7 @@ const ReviewSpendingLimitTx = ({
     () => ({
       safeAddress,
       token: spendingLimit?.token.address || ZERO_ADDRESS,
-      to: params.recipient,
+      to: checksumAddress(params.recipient),
       amount: parseUnits(params.amount, token?.tokenInfo.decimals).toString(),
       paymentToken: ZERO_ADDRESS,
       payment: 0,
