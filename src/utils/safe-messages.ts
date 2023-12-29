@@ -18,6 +18,8 @@ import {
 
 import { hasFeature } from './chains'
 import { asError } from '@/services/exceptions/utils'
+import { toChecksumAddress } from './rsk-utils'
+import { ZERO_ADDRESS } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
 
 /*
  * From v1.3.0, EIP-1271 support was moved to the CompatibilityFallbackHandler.
@@ -92,8 +94,13 @@ export const isOffchainEIP1271Supported = (
   // Check if Safe has fallback handler
   const isHandledByFallbackHandler = gte(version, EIP1271_FALLBACK_HANDLER_SUPPORTED_SAFE_VERSION)
   if (isHandledByFallbackHandler) {
+    // Applying RSK address conversion
+    const rskFallbackHandlerAddress = toChecksumAddress(
+      fallbackHandler ? fallbackHandler.value : ZERO_ADDRESS,
+      chain.chainId,
+    )
     // We only check if any fallback Handler is set as we expect / assume that users who overwrite the fallback handler by a custom one know what they are doing
-    return fallbackHandler !== null && isValidAddress(fallbackHandler.value, chain.chainId)
+    return fallbackHandler !== null && isValidAddress(rskFallbackHandlerAddress, chain.chainId)
   }
 
   // check if Safe version supports EIP-1271
