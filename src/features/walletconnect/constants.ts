@@ -30,9 +30,9 @@ export const SAFE_COMPATIBLE_METHODS = [
 export const SAFE_COMPATIBLE_EVENTS = ['chainChanged', 'accountsChanged']
 
 export const SAFE_WALLET_METADATA = {
-  name: 'Safe{Wallet}',
+  name: 'Rootstock Safe',
   url: 'https://app.safe.global',
-  description: 'Smart contract wallet for Ethereum',
+  description: 'Smart contract wallet for Rootstock',
   icons: ['https://app.safe.global/images/logo-round.svg'],
 }
 
