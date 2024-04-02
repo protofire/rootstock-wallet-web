@@ -15,7 +15,12 @@ import SafeLogo from '@/public/images/logo.svg'
 import Link from 'next/link'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import BatchIndicator from '@/components/batch/BatchIndicator'
+import WalletConnect from '@/features/walletconnect/components'
 import { PushNotificationsBanner } from '@/components/settings/PushNotifications/PushNotificationsBanner'
+import { FEATURES } from '@/utils/chains'
+import { useHasFeature } from '@/hooks/useChains'
+import Track from '@/components/common/Track'
+import { OVERVIEW_EVENTS, OVERVIEW_LABELS } from '@/services/analytics'
 
 type HeaderProps = {
   onMenuToggle?: Dispatch<SetStateAction<boolean>>
@@ -27,9 +32,10 @@ const Header = ({ onMenuToggle, onBatchToggle }: HeaderProps): ReactElement => {
   const safeAddress = useSafeAddress()
   const showSafeToken = safeAddress && !!getSafeTokenAddress(chainId)
   const router = useRouter()
+  const enableWc = useHasFeature(FEATURES.NATIVE_WALLETCONNECT)
 
   // Logo link: if on Dashboard, link to Welcome, otherwise to the root (which redirects to either Dashboard or Welcome)
-  const logoHref = router.pathname === AppRoutes.home ? AppRoutes.welcome : AppRoutes.index
+  const logoHref = router.pathname === AppRoutes.home ? AppRoutes.welcome.index : AppRoutes.index
 
   const handleMenuToggle = () => {
     if (onMenuToggle) {
@@ -65,20 +71,28 @@ const Header = ({ onMenuToggle, onBatchToggle }: HeaderProps): ReactElement => {
         </div>
       )}
 
-      {safeAddress && (
-        <div className={classnames(css.element, css.hideMobile)}>
-          <BatchIndicator onClick={handleBatchToggle} />
-        </div>
-      )}
-
       <div className={css.element}>
         <PushNotificationsBanner>
           <NotificationCenter />
         </PushNotificationsBanner>
       </div>
 
+      {safeAddress && (
+        <div className={classnames(css.element, css.hideMobile)}>
+          <BatchIndicator onClick={handleBatchToggle} />
+        </div>
+      )}
+
+      {enableWc && (
+        <div className={classnames(css.element, css.hideMobile)}>
+          <WalletConnect />
+        </div>
+      )}
+
       <div className={classnames(css.element, css.connectWallet)}>
-        <ConnectWallet />
+        <Track label={OVERVIEW_LABELS.top_bar} {...OVERVIEW_EVENTS.OPEN_ONBOARD}>
+          <ConnectWallet />
+        </Track>
       </div>
 
       <div className={classnames(css.element, css.networkSelector)}>

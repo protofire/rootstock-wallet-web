@@ -3,7 +3,7 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { useContext, useEffect } from 'react'
 import { TxModalContext } from '@/components/tx-flow'
-import AddOwnerFlow from '@/components/tx-flow/flows/AddOwner'
+import { AddOwnerFlow } from '@/components/tx-flow/flows'
 import { AppRoutes } from '@/config/routes'
 
 const AddOwner: NextPage = () => {
@@ -23,7 +23,7 @@ const AddOwner: NextPage = () => {
   return (
     <>
       <Head>
-        <title>{'Rootstock Safe – Add Owner'}</title>
+        <title>{'Rootstock Safe – Add Signer'}</title>
       </Head>
     </>
   )

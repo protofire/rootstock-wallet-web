@@ -50,19 +50,21 @@ export const EditOwnerDialog = ({ chainId, address, name }: { chainId: string; a
   return (
     <>
       <Track {...SETTINGS_EVENTS.SETUP.EDIT_OWNER}>
-        <Tooltip title="Edit owner">
-          <IconButton onClick={() => setOpen(true)} size="small">
-            <SvgIcon component={EditIcon} inheritViewBox color="border" fontSize="small" />
-          </IconButton>
+        <Tooltip title="Edit signer">
+          <span>
+            <IconButton onClick={() => setOpen(true)} size="small">
+              <SvgIcon component={EditIcon} inheritViewBox color="border" fontSize="small" />
+            </IconButton>
+          </span>
         </Tooltip>
       </Track>
 
-      <ModalDialog open={open} onClose={handleClose} dialogTitle="Edit owner name">
+      <ModalDialog open={open} onClose={handleClose} dialogTitle="Edit signer name">
         <FormProvider {...formMethods}>
           <form onSubmit={handleSubmit(onSubmit)}>
             <DialogContent>
               <Box py={2}>
-                <NameInput label="Owner name" name="name" required />
+                <NameInput label="Signer name" name="name" required />
               </Box>
 
               <Box py={2}>

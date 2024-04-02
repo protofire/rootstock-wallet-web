@@ -2,7 +2,6 @@
   display: flex;
   width: 100%;
   overflow-x: auto;
-  border-top: 1px solid var(--color-border-light);
 }
 
 .details {
@@ -55,6 +54,15 @@
 
 .multiSend {
   border-top: 1px solid var(--color-border-light);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  margin-top: var(--space-2);
 }
 
 @media (max-width: 599.95px) {

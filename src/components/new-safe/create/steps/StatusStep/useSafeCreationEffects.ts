@@ -8,6 +8,7 @@ import { useAppDispatch } from '@/store'
 import useChainId from '@/hooks/useChainId'
 import { checksumAddress } from '@/utils/addresses'
 import { usePendingSafe } from './usePendingSafe'
+import { gtmSetSafeAddress } from '@/services/analytics/gtm'
 
 const useSafeCreationEffects = ({
   status,
@@ -75,7 +76,8 @@ const useSafeCreationEffects = ({
   // Tracking
   useEffect(() => {
     if (status === SafeCreationStatus.SUCCESS) {
-      trackEvent(CREATE_SAFE_EVENTS.CREATED_SAFE)
+      pendingSafe?.safeAddress && gtmSetSafeAddress(pendingSafe.safeAddress)
+      trackEvent({ ...CREATE_SAFE_EVENTS.CREATED_SAFE, label: 'deployment' })
       return
     }
 
@@ -83,7 +85,7 @@ const useSafeCreationEffects = ({
       trackEvent(CREATE_SAFE_EVENTS.REJECT_CREATE_SAFE)
       return
     }
-  }, [status])
+  }, [pendingSafe?.safeAddress, status])
 }
 
 export default useSafeCreationEffects

@@ -136,7 +136,12 @@ const SetAddressStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeForm
             </Grid>
           </Grid>
 
-          <AddressInput label="Safe Account" validate={validateSafeAddress} name={Field.address} />
+          <AddressInput
+            data-testid="address-section"
+            label="Safe Account"
+            validate={validateSafeAddress}
+            name={Field.address}
+          />
 
           {/* <Typography mt={4}>
             By continuing you consent to the{' '}
@@ -158,7 +163,13 @@ const SetAddressStep = ({ data, onSubmit, onBack }: StepRenderProps<LoadSafeForm
             <Button variant="outlined" size="small" onClick={handleBack} startIcon={<ArrowBackIcon fontSize="small" />}>
               Back
             </Button>
-            <Button type="submit" variant="contained" size="stretched" disabled={!isValid}>
+            <Button
+              data-testid="load-safe-next-btn"
+              type="submit"
+              variant="contained"
+              size="stretched"
+              disabled={!isValid}
+            >
               Next
             </Button>
           </Box>

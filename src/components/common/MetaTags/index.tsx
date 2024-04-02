@@ -1,6 +1,7 @@
 import { IS_PRODUCTION } from '@/config/constants'
 import { ContentSecurityPolicy, StrictTransportSecurity } from '@/config/securityHeaders'
-import { lightPalette, darkPalette } from '@safe-global/safe-react-components'
+import lightPalette from '@/components/theme/lightPalette'
+import darkPalette from '@/components/theme/darkPalette'
 
 const descriptionText = 'Rootstock Safe is the most trusted platform to manage digital assets on Rootstock.'
 const titleText = 'Rootstock Safe'
@@ -8,6 +9,7 @@ const titleText = 'Rootstock Safe'
 const MetaTags = ({ prefetchUrl }: { prefetchUrl: string }) => (
   <>
     <meta name="description" content={descriptionText} />
+    {!IS_PRODUCTION && <meta name="robots" content="noindex" />}
 
     {/* Social sharing */}
     <meta name="og:image" content="https://app.safe.global/images/social-share.png" />

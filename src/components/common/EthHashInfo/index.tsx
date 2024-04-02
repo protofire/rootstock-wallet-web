@@ -1,13 +1,11 @@
 import { type ReactElement, useMemo } from 'react'
-import useAddressBook from '@/hooks/useAddressBook'
+import useAllAddressBooks from '@/hooks/useAllAddressBooks'
 import useChainId from '@/hooks/useChainId'
 import { useAppSelector } from '@/store'
 import { selectSettings } from '@/store/settingsSlice'
 import { selectChainById } from '@/store/chainsSlice'
 import { getBlockExplorerLink } from '@/utils/chains'
 import SrcEthHashInfo, { type EthHashInfoProps } from './SrcEthHashInfo'
-import { selectAddedSafes } from '@/store/addedSafesSlice'
-import useSafeAddress from '@/hooks/useSafeAddress'
 import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const EthHashInfo = ({
@@ -17,24 +15,15 @@ const EthHashInfo = ({
 }: EthHashInfoProps & { showName?: boolean }): ReactElement => {
   const settings = useAppSelector(selectSettings)
   const currentChainId = useChainId()
-  const safeAddress = useSafeAddress()
-  const addedSafes = useAppSelector((state) => selectAddedSafes(state, currentChainId)) || {}
   const chain = useAppSelector((state) => selectChainById(state, props.chainId || currentChainId))
-  const addressBook = useAddressBook()
+  const addressBooks = useAllAddressBooks()
   const address = useMemo(() => toChecksumAddress(props.address, currentChainId), [props.address, currentChainId])
-  const link = chain ? getBlockExplorerLink(chain, address) : undefined
-  const name = showName ? addressBook[address] || props.name : undefined
-  const showEmoji =
-    settings.addressEmojis &&
-    props.showAvatar !== false &&
-    !props.customAvatar &&
-    avatarSize >= 20 &&
-    (safeAddress === props.address || props.address in addedSafes)
+  const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, address) : undefined
+  const name = showName && chain ? addressBooks?.[chain.chainId]?.[address] || props.name : undefined
 
   return (
     <SrcEthHashInfo
       prefix={chain?.shortName}
-      showPrefix={settings.shortName.show}
       copyPrefix={settings.shortName.copy}
       {...props}
       address={address}
@@ -42,7 +31,6 @@ const EthHashInfo = ({
       customAvatar={props.customAvatar}
       ExplorerButtonProps={{ title: link?.title || '', href: link?.href || '' }}
       avatarSize={avatarSize}
-      showEmoji={showEmoji}
     >
       {props.children}
     </SrcEthHashInfo>

@@ -1,7 +1,11 @@
-// import { getAddress } from 'ethers/lib/utils'
-// import { isAddress } from '@ethersproject/address'
+// import { getAddress, isAddress } from 'ethers'
 import { isAddress, toChecksumAddress } from './rsk-utils'
 
+/**
+ * Checksums the given address
+ * @param address ethereum address
+ * @returns the checksummed address if the given address is valid otherwise returns the address unchanged
+ */
 export const checksumAddress = (address: string, chainId?: string): string => {
   return isAddress(address) ? toChecksumAddress(address, chainId) : address
 }
