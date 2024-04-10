@@ -26,6 +26,7 @@ import { hasFeature } from '@/utils/chains'
 import { FEATURES } from '@safe-global/safe-gateway-typescript-sdk'
 import type { DeploySafeProps } from '@safe-global/protocol-kit'
 import { usePendingSafe } from './usePendingSafe'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 export enum SafeCreationStatus {
   AWAITING,
@@ -76,7 +77,8 @@ export const useSafeCreation = (
     dispatch(closeByGroupKey({ groupKey: SAFE_CREATION_ERROR_KEY }))
 
     const { owners, threshold, saltNonce } = pendingSafe
-    const ownersAddresses = owners.map((owner) => owner.address)
+    // UPDATE: applied RSK checksum to pass RSK check
+    const ownersAddresses = owners.map((owner) => toChecksumAddress(owner.address))
 
     try {
       if (willRelay) {
@@ -90,7 +92,8 @@ export const useSafeCreation = (
 
         const safeParams = {
           threshold,
-          owners: owners.map((owner) => owner.address),
+          // UPDATE: applied RSK checksum to pass RSK check
+          owners: owners.map((owner) => toChecksumAddress(owner.address)),
           saltNonce,
         }
 
