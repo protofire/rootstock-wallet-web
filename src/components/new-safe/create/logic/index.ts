@@ -28,7 +28,7 @@ import { backOff } from 'exponential-backoff'
 import { LATEST_SAFE_VERSION } from '@/config/constants'
 import { EMPTY_DATA, ZERO_ADDRESS } from '@safe-global/protocol-kit/dist/src/utils/constants'
 import { formatError } from '@/utils/formatters'
-import { sponsoredCall } from '@/services/tx/relaying'
+// import { sponsoredCall } from '@/services/tx/relaying'
 import { checksumAddress } from '@/utils/addresses'
 
 export type SafeCreationProps = {

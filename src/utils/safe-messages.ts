@@ -17,7 +17,7 @@ import {
 import { hasFeature } from './chains'
 import { asError } from '@/services/exceptions/utils'
 import { toChecksumAddress } from './rsk-utils'
-import { ZERO_ADDRESS } from '@safe-global/safe-core-sdk/dist/src/utils/constants'
+import { ZERO_ADDRESS } from '@safe-global/protocol-kit/dist/src/utils/constants'
 
 /*
  * From v1.3.0, EIP-1271 support was moved to the CompatibilityFallbackHandler.
