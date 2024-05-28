@@ -24,6 +24,8 @@ import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline'
 import type { SafeItem } from './useAllSafes'
 import FiatValue from '@/components/common/FiatValue'
 import QueueActions from './QueueActions'
+import { toChecksumAddress } from '@/utils/rsk-utils'
+import useAllAddressBooks from '@/hooks/useAllAddressBooks'
 
 type AccountItemProps = {
   safeItem: SafeItem
@@ -63,8 +65,9 @@ const AccountItem = ({ onLinkClick, safeItem, safeOverview }: AccountItemProps) 
     return chain ? getHref(chain, address) : ''
   }, [chain, getHref, address])
 
-  const name = useAppSelector(selectAllAddressBooks)[chainId]?.[address]
-
+  const addressBooks = useAllAddressBooks()
+  const addressSumm = useMemo(() => toChecksumAddress(address, currChainId), [address, currChainId])
+  const name = currChainId ? addressBooks?.[currChainId]?.[addressSumm] : undefined
   const isActivating = undeployedSafe?.status.status !== 'AWAITING_EXECUTION'
 
   return (
@@ -117,7 +120,7 @@ const AccountItem = ({ onLinkClick, safeItem, safeOverview }: AccountItemProps) 
         </Link>
       </Track>
 
-      <SafeListContextMenu name={name} address={address} chainId={chainId} />
+      <SafeListContextMenu name={name ?? ''} address={address} chainId={chainId} />
 
       <QueueActions
         queued={safeOverview?.queued || 0}
