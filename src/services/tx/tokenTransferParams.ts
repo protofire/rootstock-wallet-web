@@ -35,7 +35,7 @@ export const createTokenTransferParams = (
 
   return isNativeToken
     ? {
-        to: recipient,
+        to: checksumAddress(recipient),
         value,
         data: '0x',
       }
