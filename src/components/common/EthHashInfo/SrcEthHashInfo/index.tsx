@@ -1,3 +1,4 @@
+import classnames from 'classnames'
 import type { ReactNode, ReactElement, SyntheticEvent } from 'react'
 // import { isAddress } from 'ethers'
 import { isAddress } from '@/utils/rsk-utils'
@@ -16,6 +17,7 @@ export type EthHashInfoProps = {
   chainId?: string
   name?: string | null
   showAvatar?: boolean
+  onlyName?: boolean
   showCopyButton?: boolean
   prefix?: string
   showPrefix?: boolean
@@ -41,6 +43,7 @@ const SrcEthHashInfo = ({
   shortAddress = true,
   copyAddress = true,
   showAvatar = true,
+  onlyName = false,
   avatarSize,
   name,
   showCopyButton,
@@ -77,23 +80,25 @@ const SrcEthHashInfo = ({
         </div>
       )}
 
-      <Box overflow="hidden">
+      <Box overflow="hidden" className={onlyName ? css.inline : undefined}>
         {name && (
           <Box textOverflow="ellipsis" overflow="hidden" title={name}>
             {name}
           </Box>
         )}
 
-        <div className={css.addressContainer}>
-          <Box fontWeight="inherit" fontSize="inherit" overflow="hidden" textOverflow="ellipsis">
-            {copyAddress ? (
-              <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted}>
-                {addressElement}
-              </CopyAddressButton>
-            ) : (
-              addressElement
-            )}
-          </Box>
+        <div className={classnames(css.addressContainer, { [css.inline]: onlyName })}>
+          {(!onlyName || !name) && (
+            <Box fontWeight="inherit" fontSize="inherit" overflow="hidden" textOverflow="ellipsis">
+              {copyAddress ? (
+                <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted}>
+                  {addressElement}
+                </CopyAddressButton>
+              ) : (
+                addressElement
+              )}
+            </Box>
+          )}
 
           {showCopyButton && (
             <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted} />
