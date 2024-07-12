@@ -17,8 +17,8 @@ export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
   const chainId = useChainId()
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
   const { safe } = useSafeInfo()
-  const isStoredSafeValid = safe.chainId === chainId && sameAddress(safe.address.value, address)
-  const undeployedSafe = useAppSelector((state) => selectUndeployedSafe(state, chainId, address))
+  const isStoredSafeValid = safe.chainId === chainId && sameAddress(safe.address.value, checksumAddress(address))
+  const undeployedSafe = useAppSelector((state) => selectUndeployedSafe(state, chainId, checksumAddress(address)))
 
   const [data, error, loading] = useAsync<SafeInfo | undefined>(async () => {
     if (!chainId || !address) return
