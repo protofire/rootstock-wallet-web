@@ -87,7 +87,7 @@ export const CookieAndTermBanner = ({
                   <br />
                   <Typography variant="body2">Locally stored data for core functionality</Typography>
                 </Box>
-{/* 
+                {/* 
                 <Box mb={2}>
                   <CookieCheckbox
                     checkboxProps={{ ...register(CookieAndTermType.UPDATES), id: 'beamer' }}
