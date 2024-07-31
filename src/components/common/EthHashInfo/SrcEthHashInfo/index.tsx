@@ -3,7 +3,8 @@ import type { ReactNode, ReactElement, SyntheticEvent } from 'react'
 // import { isAddress } from 'ethers'
 import { isAddress } from '@/utils/rsk-utils'
 import { useTheme } from '@mui/material/styles'
-import Box from '@mui/material/Box'
+import { Box, SvgIcon, Tooltip } from '@mui/material'
+import AddressBookIcon from '@/public/images/sidebar/address-book.svg'
 import useMediaQuery from '@mui/material/useMediaQuery'
 import Identicon from '../../Identicon'
 import CopyAddressButton from '../../CopyAddressButton'
@@ -30,6 +31,7 @@ export type EthHashInfoProps = {
   children?: ReactNode
   trusted?: boolean
   ExplorerButtonProps?: ExplorerButtonProps
+  isAddressBookName?: boolean
 }
 
 const stopPropagation = (e: SyntheticEvent) => e.stopPropagation()
@@ -51,6 +53,7 @@ const SrcEthHashInfo = ({
   ExplorerButtonProps,
   children,
   trusted = true,
+  isAddressBookName = false,
 }: EthHashInfoProps): ReactElement => {
   const shouldPrefix = isAddress(address)
   const theme = useTheme()
@@ -82,8 +85,18 @@ const SrcEthHashInfo = ({
 
       <Box overflow="hidden" className={onlyName ? css.inline : undefined}>
         {name && (
-          <Box textOverflow="ellipsis" overflow="hidden" title={name}>
-            {name}
+          <Box title={name} display="flex" alignItems="center" gap={0.5}>
+            <Box overflow="hidden" textOverflow="ellipsis">
+              {name}
+            </Box>
+
+            {isAddressBookName && (
+              <Tooltip title="From your address book" placement="top">
+                <span style={{ lineHeight: 0 }}>
+                  <SvgIcon component={AddressBookIcon} inheritViewBox color="border" fontSize="small" />
+                </span>
+              </Tooltip>
+            )}
           </Box>
         )}
 
