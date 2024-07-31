@@ -27,27 +27,6 @@ export type SafeCreationProps = {
   saltNonce: number
 }
 
-/**
- * Prepare data for creating a Safe for the Core SDK
- */
-export const getSafeDeployProps = async (
-  safeParams: SafeCreationProps,
-  callback: (txHash: string) => void,
-  chainId: string,
-): Promise<DeploySafeProps & { callback: DeploySafeProps['callback'] }> => {
-  const readOnlyFallbackHandlerContract = await getReadOnlyFallbackHandlerContract(chainId, LATEST_SAFE_VERSION)
-
-  return {
-    safeAccountConfig: {
-      threshold: safeParams.threshold,
-      owners: safeParams.owners.map((owner) => checksumAddress(owner)),
-      fallbackHandler: await readOnlyFallbackHandlerContract.getAddress(),
-    },
-    saltNonce: safeParams.saltNonce.toString(),
-    callback,
-  }
-}
-
 const getSafeFactory = async (
   ethersProvider: BrowserProvider,
   safeVersion = LATEST_SAFE_VERSION,
@@ -123,36 +102,6 @@ export const encodeSafeCreationTx = async ({
     setupData,
     saltNonce,
   ])
-}
-
-/**
- * Encode a Safe creation tx in a way that we can store locally and monitor using _waitForTransaction
- */
-export const getSafeCreationTxInfo = async (
-  provider: Provider,
-  owners: NewSafeFormData['owners'],
-  threshold: NewSafeFormData['threshold'],
-  saltNonce: NewSafeFormData['saltNonce'],
-  chain: ChainInfo,
-  wallet: ConnectedWallet,
-): Promise<PendingSafeTx> => {
-  const readOnlyProxyContract = await getReadOnlyProxyFactoryContract(chain.chainId, LATEST_SAFE_VERSION)
-
-  const data = await encodeSafeCreationTx({
-    owners: owners.map((owner) => checksumAddress(owner.address)),
-    threshold,
-    saltNonce,
-    chain,
-  })
-
-  return {
-    data,
-    from: wallet.address,
-    nonce: await provider.getTransactionCount(wallet.address),
-    to: await readOnlyProxyContract.getAddress(),
-    value: BigInt(0),
-    startBlock: await provider.getBlockNumber(),
-  }
 }
 
 export const estimateSafeCreationGas = async (
