@@ -31,6 +31,7 @@ const EthHashInfo = ({
       {...props}
       address={address}
       name={name}
+      isAddressBookName={!!name}
       customAvatar={props.customAvatar}
       ExplorerButtonProps={{ title: link?.title || '', href: link?.href || '' }}
       avatarSize={avatarSize}
