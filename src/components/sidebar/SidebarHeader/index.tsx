@@ -41,7 +41,9 @@ const SafeHeader = (): ReactElement => {
   const settings = useAppSelector(selectSettings)
   const { ens } = useAddressResolver(safeAddress)
 
-  const addressCopyText = settings.shortName.copy && chain ? `${chain.shortName}:${safeAddress}` : safeAddress
+  const addressCopyText = (
+    settings.shortName.copy && chain ? `${chain.shortName}:${safeAddress}` : safeAddress
+  ).toLowerCase()
 
   const blockExplorerLink = chain ? getBlockExplorerLink(chain, safeAddress) : undefined
 
@@ -97,7 +99,7 @@ const SafeHeader = (): ReactElement => {
           </Track>
 
           <Track {...OVERVIEW_EVENTS.COPY_ADDRESS}>
-            <CopyTooltip text={addressCopyText.toLowerCase()}>
+            <CopyTooltip text={addressCopyText}>
               <IconButton data-testid="copy-address-btn" className={css.iconButton}>
                 <SvgIcon component={CopyIconBold} inheritViewBox color="primary" fontSize="small" />
               </IconButton>
