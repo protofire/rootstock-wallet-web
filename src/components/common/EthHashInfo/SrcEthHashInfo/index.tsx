@@ -104,7 +104,12 @@ const SrcEthHashInfo = ({
           {(!onlyName || !name) && (
             <Box fontWeight="inherit" fontSize="inherit" overflow="hidden" textOverflow="ellipsis">
               {copyAddress ? (
-                <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted}>
+                <CopyAddressButton
+                  prefix={prefix}
+                  address={address.toLowerCase()}
+                  copyPrefix={shouldCopyPrefix}
+                  trusted={trusted}
+                >
                   {addressElement}
                 </CopyAddressButton>
               ) : (
