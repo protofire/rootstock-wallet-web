@@ -11,29 +11,31 @@ import useSafeInfo from '../useSafeInfo'
 import { Errors, logError } from '@/services/exceptions'
 import { POLLING_INTERVAL } from '@/config/constants'
 import { checksumAddress, sameAddress } from '@/utils/addresses'
+import { useCurrentChain } from '../useChains'
 
 export const useLoadSafeInfo = (): AsyncResult<SafeInfo> => {
   const address = useSafeAddress()
   const chainId = useChainId()
+  const chain = useCurrentChain()
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
   const { safe } = useSafeInfo()
   const isStoredSafeValid = safe.chainId === chainId && sameAddress(safe.address.value, checksumAddress(address))
   const undeployedSafe = useAppSelector((state) => selectUndeployedSafe(state, chainId, checksumAddress(address)))
 
   const [data, error, loading] = useAsync<SafeInfo | undefined>(async () => {
-    if (!chainId || !address) return
+    if (!chainId || !address || !chain) return
 
     /**
      * This is the one place where we can't check for `safe.deployed` as we want to update that value
      * when the local storage is cleared, so we have to check undeployedSafe
      */
-    if (undeployedSafe) return getUndeployedSafeInfo(undeployedSafe.props, checksumAddress(address), chainId)
+    if (undeployedSafe) return getUndeployedSafeInfo(undeployedSafe.props, checksumAddress(address), chain)
 
     const safeInfo = await getSafeInfo(chainId, checksumAddress(address))
 
     return { ...safeInfo, deployed: true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chainId, address, pollCount, undeployedSafe])
+  }, [chainId, address, pollCount, undeployedSafe, chain])
 
   // Reset the counter when safe address/chainId changes
   useEffect(() => {
