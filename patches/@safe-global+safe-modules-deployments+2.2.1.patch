@@ -1,5 +1,5 @@
 diff --git a/node_modules/@safe-global/safe-modules-deployments/dist/assets/allowance-module/v0.1.0/allowance-module.json b/node_modules/@safe-global/safe-modules-deployments/dist/assets/allowance-module/v0.1.0/allowance-module.json
-index 1324cfa..5c8a9ba 100644
+index 25a409d..4d53ae7 100644
 --- a/node_modules/@safe-global/safe-modules-deployments/dist/assets/allowance-module/v0.1.0/allowance-module.json
 +++ b/node_modules/@safe-global/safe-modules-deployments/dist/assets/allowance-module/v0.1.0/allowance-module.json
 @@ -6,6 +6,8 @@
@@ -12,7 +12,7 @@ index 1324cfa..5c8a9ba 100644
          "56": "0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134",
          "100": "0xCFbFaC74C26F8647cBDb8c5caf80BB5b32E43134",
 diff --git a/node_modules/@safe-global/safe-modules-deployments/src/assets/allowance-module/v0.1.0/allowance-module.json b/node_modules/@safe-global/safe-modules-deployments/src/assets/allowance-module/v0.1.0/allowance-module.json
-index b873a40..5e49d1c 100644
+index 70e4643..6fc893a 100644
 --- a/node_modules/@safe-global/safe-modules-deployments/src/assets/allowance-module/v0.1.0/allowance-module.json
 +++ b/node_modules/@safe-global/safe-modules-deployments/src/assets/allowance-module/v0.1.0/allowance-module.json
 @@ -6,6 +6,8 @@
