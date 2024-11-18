@@ -86,14 +86,14 @@ export const CookieAndTermBanner = ({
         <Grid container alignItems="center">
           <Grid item xs>
           <Typography variant="body2" mb={2}>
-              By browsing this page, you accept our
-              <ExternalLink href={AppRoutes.terms} passHref legacyBehavior>
-                Terms & Conditions
-              </ExternalLink>{' '}
-              (last updated November 2024) and the use of necessary cookies.{' '}
-              <ExternalLink href={AppRoutes.cookie} passHref legacyBehavior>
-                Cookie policy
-              </ExternalLink>{' '}
+              By browsing this page, you accept our{' '}
+              <Link href={AppRoutes.terms}>
+                <u>Terms & Conditions </u>
+              </Link>{' '}
+              and the use of necessary cookies.
+              <Link href={AppRoutes.cookie}>
+                <u>Cookies Policy</u>{' '}
+              </Link>
             </Typography>
 
             <Grid container alignItems="center" gap={4}>
