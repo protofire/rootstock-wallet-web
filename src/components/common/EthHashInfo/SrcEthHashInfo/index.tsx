@@ -119,7 +119,12 @@ const SrcEthHashInfo = ({
           )}
 
           {showCopyButton && (
-            <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted} />
+            <CopyAddressButton
+              prefix={prefix}
+              address={address.toLowerCase()}
+              copyPrefix={shouldCopyPrefix}
+              trusted={trusted}
+            />
           )}
 
           {hasExplorer && ExplorerButtonProps && (

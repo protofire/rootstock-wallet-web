@@ -19,17 +19,9 @@ const CopyAddressButton = ({
 }): ReactElement => {
   const addressText = copyPrefix && prefix ? `${prefix}:${address}` : address
 
-  const checksummedAddress = checksumAddress(address)
-
   const dialogContent = trusted ? undefined : (
     <Box display="flex" flexDirection="column" gap={2}>
-      <EthHashInfo
-        address={checksummedAddress}
-        shortAddress={false}
-        copyAddress={false}
-        showCopyButton={false}
-        hasExplorer
-      />
+      <EthHashInfo address={address} shortAddress={false} copyAddress={false} showCopyButton={false} hasExplorer />
       <Typography>
         The copied address is linked to a transaction with an untrusted token. Make sure you are interacting with the
         right address.
