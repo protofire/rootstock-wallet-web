@@ -18,6 +18,7 @@ import { addressIsNotCurrentSafe } from '@/utils/validation'
 import { isHardwareWallet } from '@/utils/wallets'
 import { toChecksumAddress } from '@/utils/rsk-utils'
 import { isAddress } from 'ethers'
+import { isEthSignWallet } from '@/utils/wallets'
 import { Close } from '@mui/icons-material'
 import {
   Alert,
@@ -89,12 +90,13 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
       }
 
       const hardwareWallet = isHardwareWallet(wallet)
-      const signer = await getAssertedChainSigner(wallet.provider)
 
       // For Rootstock, use the address in lowercase
       const checksummedAddress =
         chainId === '30' || chainId === '31' ? cleanAddress : toChecksumAddress(cleanAddress, chainId)
 
+      const shouldEthSign = isEthSignWallet(wallet)
+      const signer = await getAssertedChainSigner(wallet.provider)
       const signature = hardwareWallet
         ? await signProposerData(checksummedAddress, signer, chainId)
         : await signProposerTypedData(chainId, checksummedAddress, signer)
@@ -106,7 +108,7 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
         label: data.name,
         delegate: checksummedAddress,
         safeAddress,
-        isHardwareWallet: hardwareWallet,
+        shouldEthSign,
       })
 
       trackEvent(

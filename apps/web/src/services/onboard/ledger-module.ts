@@ -1,3 +1,4 @@
+import { toChecksumAddress } from '@/utils/rsk-utils'
 import type { DeviceActionState } from '@ledgerhq/device-management-kit'
 import type {
   GetAddressDAOutput,
@@ -10,7 +11,9 @@ import type { Chain, WalletInit, WalletInterface } from '@web3-onboard/common'
 import type { Account, Asset, BasePath, DerivationPath, ScanAccountsOptions } from '@web3-onboard/hw-common'
 
 const LEDGER_LIVE_PATH: DerivationPath = "44'/60'"
-const LEDGER_DEFAULT_PATH: DerivationPath = "44'/60'/0'"
+const LEDGER_LEGACY_PATH: DerivationPath = "44'/60'/0'"
+const ROOTSTOCK: DerivationPath = `44'/137'/0'/0`
+const ROOTSTOCK_TEST: DerivationPath = `44'/37310'/0'/0`
 
 const DEFAULT_BASE_PATHS: Array<BasePath> = [
   {
@@ -19,20 +22,25 @@ const DEFAULT_BASE_PATHS: Array<BasePath> = [
   },
   {
     label: 'Ledger Legacy',
-    value: LEDGER_DEFAULT_PATH,
+    value: LEDGER_LEGACY_PATH,
+  },
+  {
+    label: 'Rootstock Path',
+    value: ROOTSTOCK,
+  },
+  {
+    label: 'Rootstock Testnet Path',
+    value: ROOTSTOCK_TEST,
   },
 ]
 
 const DEFAULT_ASSETS: Array<Asset> = [
   {
-    label: 'ETH',
+    label: 'RBTC',
   },
 ]
 
-// Error code returned by Ledger device when user rejects action
-const REJECTION_ERROR_CODE = '6985'
-
-export function ledgerModuleV2(): WalletInit {
+export function ledgerModule(): WalletInit {
   return () => {
     return {
       label: 'Ledger',
@@ -44,6 +52,8 @@ export function ledgerModuleV2(): WalletInit {
       getInterface: async ({ chains, EventEmitter }): Promise<WalletInterface> => {
         const DEFAULT_CHAIN = chains[0]
 
+        const { BigNumber } = await import('@ethersproject/bignumber')
+        const { hexaStringToBuffer } = await import('@ledgerhq/device-management-kit')
         const { createEIP1193Provider, ProviderRpcError, ProviderRpcErrorCode } = await import('@web3-onboard/common')
         const { accountSelect, getHardwareWalletProvider } = await import('@web3-onboard/hw-common')
         const { getBytes, Signature, Transaction, JsonRpcProvider } = await import('ethers')
@@ -74,7 +84,7 @@ export function ledgerModuleV2(): WalletInit {
         // Sets the current account and emits the accountsChanged event
         function setCurrentAccount(account: Account): void {
           currentAccount = account
-          eventEmitter.emit('accountsChanged', [account.address])
+          eventEmitter.emit('accountsChanged', [currentAccount.address])
         }
 
         // Clears the current account and emits the accountsChanged event
@@ -137,6 +147,14 @@ export function ledgerModuleV2(): WalletInit {
               const txParams = args.params[0]
 
               const gasLimit = txParams.gas ?? txParams.gasLimit
+              const nonce =
+                txParams.nonce ??
+                // Safe creation does not provide nonce
+                ((await eip1193Provider.request({
+                  method: 'eth_getTransactionCount',
+                  params: [currentAccount!.address, 'latest'],
+                })) as string)
+
               const transaction = Transaction.from({
                 chainId: BigInt(currentChain.id),
                 data: txParams.data,
@@ -144,12 +162,15 @@ export function ledgerModuleV2(): WalletInit {
                 gasPrice: txParams.gasPrice ? BigInt(txParams.gasPrice) : null,
                 maxFeePerGas: txParams.maxFeePerGas ? BigInt(txParams.maxFeePerGas) : null,
                 maxPriorityFeePerGas: txParams.maxPriorityFeePerGas ? BigInt(txParams.maxPriorityFeePerGas) : null,
-                nonce: txParams.nonce ? parseInt(txParams.nonce, 16) : null,
+                nonce: parseInt(nonce, 16),
                 to: txParams.to,
                 value: txParams.value ? BigInt(txParams.value) : null,
               })
 
-              transaction.signature = await ledgerSdk.signTransaction(getAssertedDerivationPath(), transaction)
+              transaction.signature = await ledgerSdk.signTransaction(
+                getAssertedDerivationPath(),
+                hexaStringToBuffer(transaction.unsignedSerialized)!,
+              )
 
               return transaction.serialized
             },
@@ -248,7 +269,12 @@ export function ledgerModuleV2(): WalletInit {
           const provider = new JsonRpcProvider(currentChain.rpcUrl)
 
           // Only return exact account from custom derivation
-          if (args.derivationPath !== LEDGER_LIVE_PATH && args.derivationPath !== LEDGER_DEFAULT_PATH) {
+          if (
+            args.derivationPath !== LEDGER_LIVE_PATH &&
+            args.derivationPath !== LEDGER_LEGACY_PATH &&
+            args.derivationPath !== ROOTSTOCK &&
+            args.derivationPath !== ROOTSTOCK_TEST
+          ) {
             const account = await deriveAccount({ ...args, provider })
             return [account]
           }
@@ -269,7 +295,7 @@ export function ledgerModuleV2(): WalletInit {
             })
             accounts.push(account)
 
-            if (typeof account.balance.value !== 'bigint' && account.balance.value.isZero()) {
+            if (account.balance.value.isZero()) {
               zeroBalanceAccounts++
             } else {
               zeroBalanceAccounts = 0
@@ -287,15 +313,18 @@ export function ledgerModuleV2(): WalletInit {
           provider: InstanceType<typeof JsonRpcProvider>
           asset: Asset
         }): Promise<Account> {
-          const { address } = await ledgerSdk.getAddress(args.derivationPath)
+          let { address } = await ledgerSdk.getAddress(args.derivationPath)
           const balance = await args.provider.getBalance(address)
 
+          if (args.derivationPath.includes("m/44'/137") || args.derivationPath.includes("m/44'/37310")) {
+            address = toChecksumAddress(address) as `0x${string}`
+          }
           return {
             derivationPath: args.derivationPath,
             address,
             balance: {
               asset: args.asset.label,
-              value: BigInt(balance),
+              value: BigNumber.from(balance),
             },
           }
         }
@@ -308,24 +337,23 @@ export function ledgerModuleV2(): WalletInit {
   }
 }
 
+const enum LedgerErrorCode {
+  REJECTED = '6985',
+}
+
 // Promisified Ledger SDK
 async function getLedgerSdk() {
-  const { BuiltinTransports, DeviceActionStatus, DeviceManagementKitBuilder } = await import(
-    '@ledgerhq/device-management-kit'
-  )
+  const { DeviceActionStatus, DeviceManagementKitBuilder } = await import('@ledgerhq/device-management-kit')
+  const { webHidTransportFactory, webHidIdentifier } = await import('@ledgerhq/device-transport-kit-web-hid')
   const { SignerEthBuilder } = await import('@ledgerhq/device-signer-kit-ethereum')
   const { makeError } = await import('ethers')
   const { default: get } = await import('lodash/get')
   const { lastValueFrom } = await import('rxjs')
 
   // Get connected device and create signer
-  const transport = BuiltinTransports.USB
-  const dmk = new DeviceManagementKitBuilder().addTransport(transport).build()
-  const device = await lastValueFrom(dmk.startDiscovering({ transport }))
+  const dmk = new DeviceManagementKitBuilder().addTransport(webHidTransportFactory).build()
+  const device = await lastValueFrom(dmk.startDiscovering({ transport: webHidIdentifier }))
   const sessionId = await dmk.connect({ device })
-
-  // TODO: Create a Safe-specific ContextModule for clear signing
-  // @see https://github.com/LedgerHQ/device-sdk-ts/tree/develop/packages/signer/context-module
   const signer = new SignerEthBuilder({ dmk, sessionId }).build()
 
   function mapOutput<T>(actionState: DeviceActionState<T, unknown, unknown>): T {
@@ -335,12 +363,13 @@ async function getLedgerSdk() {
       }
       case DeviceActionStatus.Error: {
         const errorCode = get(actionState.error, 'originalError.errorCode')
-        const isRejection = errorCode === REJECTION_ERROR_CODE
+        const isRejection = errorCode === LedgerErrorCode.REJECTED
 
         if (!isRejection) {
           throw actionState.error
         }
 
+        // Ethers error for user rejection
         throw makeError('user rejected action', 'ACTION_REJECTED', {
           action: 'unknown',
           reason: 'rejected',
@@ -354,7 +383,7 @@ async function getLedgerSdk() {
   }
 
   return {
-    disconnect: async () => {
+    disconnect: async (): Promise<void> => {
       return dmk.disconnect({ sessionId })
     },
     getAddress: async (derivationPath: string): Promise<GetAddressDAOutput> => {
@@ -365,7 +394,7 @@ async function getLedgerSdk() {
       const actionState = await lastValueFrom(signer.signMessage(derivationPath, message).observable)
       return mapOutput(actionState)
     },
-    signTransaction: async (derivationPath: string, transaction: any): Promise<SignTransactionDAOutput> => {
+    signTransaction: async (derivationPath: string, transaction: Uint8Array): Promise<SignTransactionDAOutput> => {
       const actionState = await lastValueFrom(signer.signTransaction(derivationPath, transaction).observable)
       return mapOutput(actionState)
     },

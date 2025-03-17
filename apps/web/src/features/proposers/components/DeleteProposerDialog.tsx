@@ -9,8 +9,7 @@ import { useAppDispatch } from '@/store'
 import { useDeleteProposerMutation } from '@/store/api/gateway'
 import { showNotification } from '@/store/notificationsSlice'
 import { shortenAddress } from '@/utils/formatters'
-import { isHardwareWallet } from '@/utils/wallets'
-import { toChecksumAddress } from '@/utils/rsk-utils'
+import { isEthSignWallet } from '@/utils/wallets'
 import type { Delegate } from '@safe-global/safe-gateway-typescript-sdk/dist/types/delegates'
 import React, { useState } from 'react'
 import {
@@ -33,6 +32,7 @@ import useChainId from '@/hooks/useChainId'
 import useSafeAddress from '@/hooks/useSafeAddress'
 import { getAssertedChainSigner } from '@/services/tx/tx-sender/sdk'
 import ErrorMessage from '@/components/tx/ErrorMessage'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 type DeleteProposerProps = {
   wallet: ReturnType<typeof useWallet>
@@ -59,9 +59,9 @@ const InternalDeleteProposer = ({ wallet, safeAddress, chainId, proposer }: Dele
     }
 
     try {
-      const hardwareWallet = isHardwareWallet(wallet)
+      const shouldEthSign = isEthSignWallet(wallet)
       const signer = await getAssertedChainSigner(wallet.provider)
-      const signature = hardwareWallet
+      const signature = shouldEthSign
         ? await signProposerData(proposer.delegate, signer, chainId)
         : await signProposerTypedData(chainId, proposer.delegate, signer)
 
@@ -71,7 +71,7 @@ const InternalDeleteProposer = ({ wallet, safeAddress, chainId, proposer }: Dele
         delegator: proposer.delegator,
         safeAddress,
         signature,
-        isHardwareWallet: hardwareWallet,
+        shouldEthSign,
       })
 
       trackEvent(SETTINGS_EVENTS.PROPOSERS.SUBMIT_REMOVE_PROPOSER)
