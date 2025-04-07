@@ -1,4 +1,3 @@
-import { checksumAddress } from '@/utils/addresses'
 import { Box, Typography } from '@mui/material'
 import type { ReactNode, ReactElement } from 'react'
 import CopyButton from '../CopyButton'

@@ -13,7 +13,6 @@ import {
 import { FEATURES } from '@/utils/chains'
 
 import { hasFeature } from './chains'
-import { asError } from '@/services/exceptions/utils'
 import { toChecksumAddress } from './rsk-utils'
 import { ZERO_ADDRESS } from '@safe-global/protocol-kit/dist/src/utils/constants'
 import { SigningMethod } from '@safe-global/protocol-kit'
