@@ -16,9 +16,9 @@ export const getAvailableSigners = (
 
   const isDirectOwner = safe.owners.map((owner) => checksumAddress(owner.value)).includes(walletAddress)
   const isFullySigned = tx.signatures.size >= safe.threshold
-  const availableSigners = nestedSafeOwners ? nestedSafeOwners.map(checksumAddress) : []
+  const availableSigners = nestedSafeOwners ? nestedSafeOwners.map((addr) => checksumAddress(addr)) : []
 
-  const signers = Array.from(tx.signatures.keys()).map(checksumAddress)
+  const signers = Array.from(tx.signatures.keys()).map((addr) => checksumAddress(addr))
 
   if (isDirectOwner && !signers.includes(walletAddress)) {
     availableSigners.push(walletAddress)
