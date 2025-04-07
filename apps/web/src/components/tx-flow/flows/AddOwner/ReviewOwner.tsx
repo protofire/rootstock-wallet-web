@@ -10,6 +10,7 @@ import { upsertAddressBookEntries } from '@/store/addressBookSlice'
 import { SafeTxContext } from '../../SafeTxProvider'
 import type { AddOwnerFlowProps } from '.'
 import type { ReplaceOwnerFlowProps } from '../ReplaceOwner'
+import { checksumAddress } from '@/utils/addresses'
 import { SettingsChangeContext } from './context'
 
 export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwnerFlowProps }) => {

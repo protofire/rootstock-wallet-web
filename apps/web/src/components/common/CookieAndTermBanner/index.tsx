@@ -103,10 +103,14 @@ export const CookieAndTermBanner = ({
               }}
             >
               By browsing this page, you accept our{' '}
-              <ExternalLink href={AppRoutes.terms}>Terms & Conditions</ExternalLink> (last updated{' '}
-              {metadata.lastUpdated}) and the use of necessary cookies. By clicking &quot;Accept all&quot; you
-              additionally agree to the use of Beamer and Analytics cookies as listed below.{' '}
-              <ExternalLink href={AppRoutes.cookie}>Cookie policy</ExternalLink>
+              <Link href={AppRoutes.terms} style={{ textDecoration: 'underline' }}>
+                Terms & Conditions
+              </Link>{' '}
+              and the use of necessary cookies.{' '}
+              <Link href={AppRoutes.cookie} style={{ textDecoration: 'underline' }}>
+                Cookie policy
+              </Link>
+              .
             </Typography>
 
             <Grid
@@ -126,12 +130,8 @@ export const CookieAndTermBanner = ({
                   <br />
                   <Typography variant="body2">Locally stored data for core functionality</Typography>
                 </Box>
-
-                <Box
-                  sx={{
-                    mb: 2,
-                  }}
-                >
+                {/* 
+                <Box mb={2}>
                   <CookieCheckbox
                     checkboxProps={{ ...register(CookieAndTermType.UPDATES), id: 'beamer' }}
                     label="Beamer"
