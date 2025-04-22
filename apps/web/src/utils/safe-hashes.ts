@@ -19,9 +19,14 @@ export function getDomainHash({
   safeVersion: SafeVersion
 }): string {
   const includeChainId = semverSatisfies(safeVersion, NEW_DOMAIN_TYPE_HASH_VERSION)
+
+  // For Rootstock, use the address in lowercase
+  const verifyingContract =
+    chainId === '30' || chainId === '31' ? safeAddress.toLowerCase() : toChecksumAddress(safeAddress, chainId)
+
   return TypedDataEncoder.hashDomain({
     ...(includeChainId && { chainId }),
-    verifyingContract: toChecksumAddress(safeAddress, chainId),
+    verifyingContract,
   })
 }
 
