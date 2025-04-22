@@ -2,6 +2,7 @@ import { TypedDataEncoder } from 'ethers'
 import semverSatisfies from 'semver/functions/satisfies'
 import { getEip712MessageTypes, getEip712TxTypes } from '@safe-global/protocol-kit/dist/src/utils'
 import type { SafeMessage, SafeTransactionData, SafeVersion } from '@safe-global/safe-core-sdk-types'
+import { toChecksumAddress } from './rsk-utils'
 
 import { generateSafeMessageMessage } from './safe-messages'
 
@@ -20,7 +21,7 @@ export function getDomainHash({
   const includeChainId = semverSatisfies(safeVersion, NEW_DOMAIN_TYPE_HASH_VERSION)
   return TypedDataEncoder.hashDomain({
     ...(includeChainId && { chainId }),
-    verifyingContract: safeAddress,
+    verifyingContract: toChecksumAddress(safeAddress, chainId),
   })
 }
 
