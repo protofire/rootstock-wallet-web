@@ -11,7 +11,6 @@ import ExplorerButton, { type ExplorerButtonProps } from '../../ExplorerButton'
 import { shortenAddress } from '@/utils/formatters'
 import ImageFallback from '../../ImageFallback'
 import css from './styles.module.css'
-import useChainId from '@/hooks/useChainId'
 
 export type EthHashInfoProps = {
   address: string
@@ -55,9 +54,7 @@ const SrcEthHashInfo = ({
   trusted = true,
   isAddressBookName = false,
 }: EthHashInfoProps): ReactElement => {
-  const currentChainId = useChainId()
-  const isRootstock = currentChainId === '30' || currentChainId === '31'
-  const shouldPrefix = isRootstock ? true : isAddress(address)
+  const shouldPrefix = isAddress(address)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const identicon = <Identicon address={address} size={avatarSize} />
