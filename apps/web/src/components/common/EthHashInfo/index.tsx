@@ -17,7 +17,15 @@ const EthHashInfo = ({
   const currentChainId = useChainId()
   const chain = useChain(props.chainId || currentChainId)
   const addressBooks = useAllAddressBooks()
-  const address = useMemo(() => toChecksumAddress(props.address, currentChainId), [props.address, currentChainId])
+
+  // For Rootstock, use the address as is without checksum
+  const address = useMemo(() => {
+    if (chain?.chainId === '30' || chain?.chainId === '31') {
+      return props.address
+    }
+    return toChecksumAddress(props.address, currentChainId)
+  }, [props.address, currentChainId, chain?.chainId])
+
   const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, address) : undefined
   const name = showName && chain ? addressBooks?.[chain.chainId]?.[address] || props.name : undefined
   // const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, props.address) : undefined

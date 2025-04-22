@@ -1,6 +1,5 @@
 import classnames from 'classnames'
 import type { ReactNode, ReactElement, SyntheticEvent } from 'react'
-// import { isAddress } from 'ethers'
 import { isAddress } from '@/utils/rsk-utils'
 import { useTheme } from '@mui/material/styles'
 import { Box, SvgIcon, Tooltip } from '@mui/material'
@@ -12,6 +11,7 @@ import ExplorerButton, { type ExplorerButtonProps } from '../../ExplorerButton'
 import { shortenAddress } from '@/utils/formatters'
 import ImageFallback from '../../ImageFallback'
 import css from './styles.module.css'
+import useChainId from '@/hooks/useChainId'
 
 export type EthHashInfoProps = {
   address: string
@@ -55,7 +55,9 @@ const SrcEthHashInfo = ({
   trusted = true,
   isAddressBookName = false,
 }: EthHashInfoProps): ReactElement => {
-  const shouldPrefix = isAddress(address)
+  const currentChainId = useChainId()
+  const isRootstock = currentChainId === '30' || currentChainId === '31'
+  const shouldPrefix = isRootstock ? true : isAddress(address)
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'))
   const identicon = <Identicon address={address} size={avatarSize} />
@@ -104,12 +106,7 @@ const SrcEthHashInfo = ({
           {(!onlyName || !name) && (
             <Box fontWeight="inherit" fontSize="inherit" overflow="hidden" textOverflow="ellipsis">
               {copyAddress ? (
-                <CopyAddressButton
-                  prefix={prefix}
-                  address={address.toLowerCase()}
-                  copyPrefix={shouldCopyPrefix}
-                  trusted={trusted}
-                >
+                <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted}>
                   {addressElement}
                 </CopyAddressButton>
               ) : (
@@ -119,12 +116,7 @@ const SrcEthHashInfo = ({
           )}
 
           {showCopyButton && (
-            <CopyAddressButton
-              prefix={prefix}
-              address={address.toLowerCase()}
-              copyPrefix={shouldCopyPrefix}
-              trusted={trusted}
-            />
+            <CopyAddressButton prefix={prefix} address={address} copyPrefix={shouldCopyPrefix} trusted={trusted} />
           )}
 
           {hasExplorer && ExplorerButtonProps && (
