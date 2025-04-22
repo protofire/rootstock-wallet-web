@@ -6,7 +6,7 @@ import { useAppSelector } from '@/store'
 import { selectSettings } from '@/store/settingsSlice'
 import { getBlockExplorerLink } from '@/utils/chains'
 import SrcEthHashInfo, { type EthHashInfoProps } from './SrcEthHashInfo'
-import { toChecksumAddress } from '@/utils/rsk-utils'
+import { toChecksumAddress, isAddress } from '@/utils/rsk-utils'
 
 const EthHashInfo = ({
   showName = true,
@@ -20,6 +20,11 @@ const EthHashInfo = ({
 
   // Always use toChecksumAddress for Rootstock
   const address = useMemo(() => {
+    // First validate if it's a valid address
+    if (!isAddress(props.address)) {
+      return props.address
+    }
+    // Then apply our checksum
     return toChecksumAddress(props.address, currentChainId)
   }, [props.address, currentChainId])
 
