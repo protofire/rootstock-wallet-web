@@ -16,6 +16,7 @@ import { showNotification } from '@/store/notificationsSlice'
 import { shortenAddress } from '@/utils/formatters'
 import { addressIsNotCurrentSafe } from '@/utils/validation'
 import { isHardwareWallet } from '@/utils/wallets'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 import { Close } from '@mui/icons-material'
 import {
   Alert,
@@ -90,7 +91,7 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
         delegator: wallet.address,
         signature,
         label: data.name,
-        delegate: data.address,
+        delegate: toChecksumAddress(data.address, chainId),
         safeAddress,
         isHardwareWallet: hardwareWallet,
       })
@@ -160,7 +161,7 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
               </Typography>
             </Box>
 
-            <Alert severity="info">Proposer’s name and address are publicly visible.</Alert>
+            <Alert severity="info">Proposer&apos;s name and address are publicly visible.</Alert>
 
             <Box my={2}>
               {isEditing ? (

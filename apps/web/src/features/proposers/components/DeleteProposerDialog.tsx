@@ -10,6 +10,7 @@ import { useDeleteProposerMutation } from '@/store/api/gateway'
 import { showNotification } from '@/store/notificationsSlice'
 import { shortenAddress } from '@/utils/formatters'
 import { isHardwareWallet } from '@/utils/wallets'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 import type { Delegate } from '@safe-global/safe-gateway-typescript-sdk/dist/types/delegates'
 import React, { useState } from 'react'
 import {
@@ -66,7 +67,7 @@ const InternalDeleteProposer = ({ wallet, safeAddress, chainId, proposer }: Dele
 
       await deleteProposer({
         chainId,
-        delegateAddress: proposer.delegate,
+        delegateAddress: toChecksumAddress(proposer.delegate, chainId),
         delegator: proposer.delegator,
         safeAddress,
         signature,
