@@ -1,7 +1,6 @@
 import Typography from '@mui/material/Typography'
 import Button from '@mui/material/Button'
 import SvgIcon from '@mui/material/SvgIcon'
-import { DISCORD_URL } from '@/config/constants'
 import NetworkError from '@/public/images/apps/network-error.svg'
 
 import css from './styles.module.css'
@@ -20,9 +19,9 @@ const SafeAppsLoadError = ({ onBackToApps }: SafeAppsLoadErrorProps): React.Reac
         <SvgIcon component={NetworkError} inheritViewBox className={css.image} />
 
         <div>
-          <Typography component="span">In case the problem persists, please reach out to us via </Typography>
-          <ExternalLink href={DISCORD_URL} fontSize="medium">
-            Discord
+          <Typography component="span">In case the problem persists, please eport it through our </Typography>
+          <ExternalLink href="https://safe-support.protofire.io/" fontSize="medium">
+            Form
           </ExternalLink>
         </div>
 
