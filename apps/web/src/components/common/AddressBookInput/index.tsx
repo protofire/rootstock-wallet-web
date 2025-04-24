@@ -11,6 +11,8 @@ import css from './styles.module.css'
 import inputCss from '@/styles/inputs.module.css'
 import { isValidAddress } from '@/utils/validation'
 import { sameAddress } from '@/utils/addresses'
+import { toChecksumAddress } from '@/utils/rsk-utils'
+import useChainId from '@/hooks/useChainId'
 
 const abFilterOptions = createFilterOptions({
   stringify: (option: { label: string; name: string }) => option.name + ' ' + option.label,
@@ -25,6 +27,7 @@ const AddressBookInput = ({ name, canAdd, ...props }: AddressInputProps & { canA
   const addressValue = useWatch({ name, control })
   const [open, setOpen] = useState(false)
   const [openAddressBook, setOpenAddressBook] = useState<boolean>(false)
+  const chainId = useChainId()
 
   const addressBookEntries = Object.entries(addressBook).map(([address, name]) => ({
     label: address,
@@ -57,6 +60,14 @@ const AddressBookInput = ({ name, canAdd, ...props }: AddressInputProps & { canA
       }
     : undefined
 
+  const handleAddressChange = (value: string) => {
+    if (isValidAddress(value)) {
+      setValue(name, toChecksumAddress(value, chainId), { shouldValidate: true })
+    } else {
+      setValue(name, value, { shouldValidate: true })
+    }
+  }
+
   return (
     <>
       <Controller
@@ -72,8 +83,10 @@ const AddressBookInput = ({ name, canAdd, ...props }: AddressInputProps & { canA
             readOnly={props.InputProps?.readOnly}
             freeSolo
             options={addressBookEntries}
-            onChange={(_, value) => (typeof value === 'string' ? field.onChange(value) : field.onChange(value.label))}
-            onInputChange={(_, value) => setValue(name, value)}
+            onChange={(_, value) =>
+              typeof value === 'string' ? handleAddressChange(value) : handleAddressChange(value.label)
+            }
+            onInputChange={(_, value) => handleAddressChange(value)}
             filterOptions={customFilterOptions}
             componentsProps={{
               paper: {
