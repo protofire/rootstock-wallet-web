@@ -17,6 +17,7 @@ import { shortenAddress } from '@/utils/formatters'
 import { addressIsNotCurrentSafe } from '@/utils/validation'
 import { isHardwareWallet } from '@/utils/wallets'
 import { toChecksumAddress } from '@/utils/rsk-utils'
+import { isAddress } from 'ethers'
 import { Close } from '@mui/icons-material'
 import {
   Alert,
@@ -80,18 +81,23 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
     setIsLoading(true)
 
     try {
+      if (!isAddress(data.address)) {
+        throw new Error('Invalid address format')
+      }
+
       const hardwareWallet = isHardwareWallet(wallet)
       const signer = await getAssertedChainSigner(wallet.provider)
+      const checksummedAddress = toChecksumAddress(data.address, chainId)
       const signature = hardwareWallet
-        ? await signProposerData(data.address, signer)
-        : await signProposerTypedData(chainId, data.address, signer)
+        ? await signProposerData(checksummedAddress, signer, chainId)
+        : await signProposerTypedData(chainId, checksummedAddress, signer)
 
       await addProposer({
         chainId,
         delegator: wallet.address,
         signature,
         label: data.name,
-        delegate: toChecksumAddress(data.address, chainId),
+        delegate: checksummedAddress,
         safeAddress,
         isHardwareWallet: hardwareWallet,
       })
