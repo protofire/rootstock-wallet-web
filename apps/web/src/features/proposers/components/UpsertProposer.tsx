@@ -81,13 +81,16 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
     setIsLoading(true)
 
     try {
-      if (!isAddress(data.address)) {
+      // Remove any whitespace and ensure address is lowercase before validation
+      const cleanAddress = data.address.trim().toLowerCase()
+
+      if (!isAddress(cleanAddress)) {
         throw new Error('Invalid address format')
       }
 
       const hardwareWallet = isHardwareWallet(wallet)
       const signer = await getAssertedChainSigner(wallet.provider)
-      const checksummedAddress = toChecksumAddress(data.address, chainId)
+      const checksummedAddress = toChecksumAddress(cleanAddress, chainId)
       const signature = hardwareWallet
         ? await signProposerData(checksummedAddress, signer, chainId)
         : await signProposerTypedData(chainId, checksummedAddress, signer)

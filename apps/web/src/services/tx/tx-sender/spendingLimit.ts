@@ -15,7 +15,7 @@ import type { ChainInfo, SafeInfo } from '@safe-global/safe-gateway-typescript-s
 import { parseUnits } from 'ethers'
 import { currentMinutes } from '@/utils/date'
 import { createMultiSendCallOnlyTx } from '@/services/tx/tx-sender/create'
-import { toChecksumAddress } from '@/utils/rsk-utils'
+import { checksumAddress } from '@/utils/addresses'
 
 export type NewSpendingLimitData = {
   beneficiary: string
@@ -45,8 +45,7 @@ export const createNewSpendingLimitTx = async (
   if (!spendingLimitAddress) return
 
   const txs: MetaTransactionData[] = []
-  data.beneficiary = toChecksumAddress(data.beneficiary, chainId)
-  data.tokenAddress = toChecksumAddress(data.tokenAddress, chainId)
+  data.beneficiary = checksumAddress(data.beneficiary)
 
   if (!deployed) {
     const enableModuleTx = await createEnableModuleTx(
