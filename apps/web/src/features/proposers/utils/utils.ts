@@ -6,7 +6,10 @@ import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
   const totp = Math.floor(Date.now() / 1000 / 3600)
-  const checksummedAddress = toChecksumAddress(proposerAddress, chainId)
+
+  // For Rootstock, use the address in lowercase
+  const checksummedAddress =
+    chainId === '30' || chainId === '31' ? proposerAddress.toLowerCase() : toChecksumAddress(proposerAddress, chainId)
 
   const domain = {
     name: 'Safe Transaction Service',
@@ -40,7 +43,10 @@ export const signProposerTypedData = async (chainId: string, proposerAddress: st
 
 const getProposerDataV1 = (proposerAddress: string, chainId: string) => {
   const totp = Math.floor(Date.now() / 1000 / 3600)
-  const checksummedAddress = toChecksumAddress(proposerAddress, chainId)
+
+  // For Rootstock, use the address in lowercase
+  const checksummedAddress =
+    chainId === '30' || chainId === '31' ? proposerAddress.toLowerCase() : toChecksumAddress(proposerAddress, chainId)
 
   return `${checksummedAddress}${totp}`
 }
