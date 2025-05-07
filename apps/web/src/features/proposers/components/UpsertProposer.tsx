@@ -90,7 +90,11 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
 
       const hardwareWallet = isHardwareWallet(wallet)
       const signer = await getAssertedChainSigner(wallet.provider)
-      const checksummedAddress = toChecksumAddress(cleanAddress, chainId)
+
+      // For Rootstock, use the address in lowercase
+      const checksummedAddress =
+        chainId === '30' || chainId === '31' ? cleanAddress : toChecksumAddress(cleanAddress, chainId)
+
       const signature = hardwareWallet
         ? await signProposerData(checksummedAddress, signer, chainId)
         : await signProposerTypedData(chainId, checksummedAddress, signer)
