@@ -14258,7 +14258,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@web3-onboard/hw-common@npm:^2.0.4, @web3-onboard/hw-common@npm:^2.3.0":
+"@web3-onboard/hw-common@npm:2.3.3":
   version: 2.3.3
   resolution: "@web3-onboard/hw-common@npm:2.3.3"
   dependencies:
@@ -14269,6 +14269,20 @@ __metadata:
     joi: "npm:17.9.1"
     rxjs: "npm:^7.5.2"
   checksum: 10/eccb0e49a1213dcf6e8e84a86c2ad5029ef78d64a65d874dc3b440bc876a2154e39b82f5c791d88502d13b89e2e598aaf11b8d5614cd0f88930464dd7739687d
+  languageName: node
+  linkType: hard
+
+"@web3-onboard/hw-common@patch:@web3-onboard/hw-common@npm%3A2.3.3#~/.yarn/patches/@web3-onboard-hw-common-npm-2.3.3-e6221f97e4.patch":
+  version: 2.3.3
+  resolution: "@web3-onboard/hw-common@patch:@web3-onboard/hw-common@npm%3A2.3.3#~/.yarn/patches/@web3-onboard-hw-common-npm-2.3.3-e6221f97e4.patch::version=2.3.3&hash=d80784"
+  dependencies:
+    "@ethereumjs/common": "npm:2.6.2"
+    "@web3-onboard/common": "npm:^2.4.1"
+    bignumber.js: "npm:^9.1.0"
+    ethers: "npm:5.5.4"
+    joi: "npm:17.9.1"
+    rxjs: "npm:^7.5.2"
+  checksum: 10/05867634a0beec32f2ce97d9e52fb9decdc06acda1c72df2dfecbeb41e9d2058a15ac03d5719cc984a931d328f449962ec8c8711a7cad57cf3cbe5efd4e5a745
   languageName: node
   linkType: hard
 
