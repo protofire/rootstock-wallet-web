@@ -1,0 +1,13 @@
+diff --git a/dist/types.d.ts b/dist/types.d.ts
+index f4e1b481b33170c418f9a1194324693d6f76e223..792bee6266a0f36987f818720477dbe40272a9b8 100644
+--- a/dist/types.d.ts
++++ b/dist/types.d.ts
+@@ -62,7 +62,7 @@ export type Account = {
+     derivationPath: DerivationPath;
+     balance: {
+         asset: Asset['label'];
+-        value: BigNumber;
++        value: BigNumber | bigint;
+     };
+ };
+ export type AccountsList = {
