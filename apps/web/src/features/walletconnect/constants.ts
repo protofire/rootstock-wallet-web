@@ -6,8 +6,6 @@ export const SAFE_COMPATIBLE_METHODS = [
   'eth_chainId',
   'personal_sign',
   'eth_sign',
-  'eth_signTypedData',
-  'eth_signTypedData_v4',
   'eth_sendTransaction',
   'eth_blockNumber',
   'eth_getBalance',

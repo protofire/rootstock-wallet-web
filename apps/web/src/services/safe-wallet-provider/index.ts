@@ -107,13 +107,10 @@ export class SafeWalletProvider {
         return this.personal_sign(...(params as [string, string]), appInfo)
       }
 
+      case 'eth_signTypedData':
+      case 'eth_signTypedData_v4':
       case 'eth_sign': {
         return this.eth_sign(...(params as [string, string]), appInfo)
-      }
-
-      case 'eth_signTypedData':
-      case 'eth_signTypedData_v4': {
-        return this.eth_signTypedData(...(params as [string, unknown]), appInfo)
       }
 
       case 'eth_sendTransaction': {
