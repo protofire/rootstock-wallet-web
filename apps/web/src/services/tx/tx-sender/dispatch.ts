@@ -92,12 +92,13 @@ export const dispatchTxSigning = async (
   safeTx: SafeTransaction,
   provider: Eip1193Provider,
   txId?: string,
+  isLedger?: boolean
 ): Promise<SafeTransaction> => {
   const sdk = await getSafeSDKWithSigner(provider)
 
   let signedTx: SafeTransaction | undefined
   try {
-    signedTx = await tryOffChainTxSigning(safeTx, sdk)
+    signedTx = await tryOffChainTxSigning(safeTx, sdk, isLedger)
   } catch (error) {
     txDispatch(TxEvent.SIGN_FAILED, {
       txId,
