@@ -1,0 +1,90 @@
+diff --git a/dist/index.js b/dist/index.js
+index 12bf9df14cebd5c11f16872e9ec369ef230594ce..95a68474992e5c2554fc6c9ff6af64e80f3f9fd0 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,7 +1,11 @@
+ // these cannot be dynamically imported
+ import { TypedDataUtils } from '@metamask/eth-sig-util';
++import { stripHexPrefix, keccak } from 'ethereumjs-util'
+ const LEDGER_LIVE_PATH = `m/44'/60'`;
+ const LEDGER_DEFAULT_PATH = `m/44'/60'/0'`;
++const ROOTSTOCK = `m/44'/137'/0'/0`;
++const ROOTSTOCK_TEST = `m/44'/37310'/0'/0`;
++
+ const DEFAULT_BASE_PATHS = [
+     {
+         label: 'Ledger Live',
+@@ -10,13 +14,41 @@ const DEFAULT_BASE_PATHS = [
+     {
+         label: 'Ledger Legacy',
+         value: LEDGER_DEFAULT_PATH
+-    }
++    },
++    {
++        label: 'Rootstock Path',
++        value: ROOTSTOCK
++    },
++    {
++        label: 'Rootstock Testnet Path',
++        value: ROOTSTOCK_TEST
++    },
+ ];
+ const assets = [
+     {
+-        label: 'ETH'
++        label: 'RBTC'
+     }
+ ];
++
++
++/**
++ * @description Implements EIP-1191 Address Checksum
++ * @param _address
++ * @param _chainId
++ * @returns checksummed address
++ */
++export function toChecksumAddress(_address, _chainId = "") {
++    const address = stripHexPrefix(_address).toLowerCase()
++    const chainId = parseInt(_chainId)
++    const prefix = !isNaN(chainId) ? `${chainId.toString()}0x` : ""
++    const hash = keccak(Buffer.from(`${prefix}${address}`)).toString("hex")
++    return ("0x" + address
++        .split("")
++        .map((b, i) => (parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b))
++        .join("")
++    )
++  };
++
+ const supportsWebUSB = () => Promise.resolve(!!navigator &&
+     !!navigator.usb &&
+     typeof navigator.usb.getDevices === 'function');
+@@ -31,7 +63,9 @@ const getAccount = async (derivationPath, asset, index, provider, eth) => {
+     const dPath = derivationPath === LEDGER_LIVE_PATH
+         ? `${derivationPath}/${index}'/0/0`
+         : `${derivationPath}/${index}`;
+-    const { address } = await eth.getAddress(dPath);
++    let { address } = await eth.getAddress(dPath);
++    //Matching rootstock checksum
++    address = toChecksumAddress(address);
+     return {
+         derivationPath: dPath,
+         address,
+@@ -94,9 +128,15 @@ function ledger({ customNetwork, filter } = {}) {
+                         ethersProvider = new StaticJsonRpcProvider(currentChain.rpcUrl);
+                         // Checks to see if this is a custom derivation path
+                         // If it is then just return the single account
+-                        if (derivationPath !== LEDGER_LIVE_PATH &&
+-                            derivationPath !== LEDGER_DEFAULT_PATH) {
+-                            const { address } = await eth.getAddress(derivationPath);
++                        if (
++                            derivationPath !== LEDGER_LIVE_PATH &&
++                            derivationPath !== LEDGER_DEFAULT_PATH &&
++                            derivationPath !== ROOTSTOCK &&
++                            derivationPath !== ROOTSTOCK_TEST) {
++                            let { address } = await eth.getAddress(derivationPath);
++                            if(derivationPath.includes("m/44'/137") || derivationPath.includes("m/44'/37310")){
++                                address = toChecksumAddress(address)
++                            }
+                             return [
+                                 {
+                                     derivationPath,

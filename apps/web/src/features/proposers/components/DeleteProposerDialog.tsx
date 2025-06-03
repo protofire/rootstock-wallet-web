@@ -62,7 +62,7 @@ const InternalDeleteProposer = ({ wallet, safeAddress, chainId, proposer }: Dele
       const hardwareWallet = isHardwareWallet(wallet)
       const signer = await getAssertedChainSigner(wallet.provider)
       const signature = hardwareWallet
-        ? await signProposerData(proposer.delegate, signer)
+        ? await signProposerData(proposer.delegate, signer, chainId)
         : await signProposerTypedData(chainId, proposer.delegate, signer)
 
       await deleteProposer({

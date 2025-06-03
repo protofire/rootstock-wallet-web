@@ -144,8 +144,12 @@ export const getSafeSDKWithSigner = async (provider: Eip1193Provider): Promise<S
   return sdk.connect({ provider })
 }
 
-export const tryOffChainTxSigning = async (safeTx: SafeTransaction, sdk: Safe): Promise<SafeTransaction> => {
-  return sdk.signTransaction(safeTx, SigningMethod.ETH_SIGN_TYPED_DATA)
+export const tryOffChainTxSigning = async (
+  safeTx: SafeTransaction,
+  sdk: Safe,
+  isLedger = false,
+): Promise<SafeTransaction> => {
+  return sdk.signTransaction(safeTx, isLedger ? SigningMethod.ETH_SIGN : SigningMethod.ETH_SIGN_TYPED_DATA)
 }
 
 export const isDelegateCall = (safeTx: SafeTransaction): boolean => {

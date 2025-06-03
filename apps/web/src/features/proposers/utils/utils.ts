@@ -2,9 +2,14 @@ import { signTypedData } from '@/utils/web3'
 import { SigningMethod } from '@safe-global/protocol-kit'
 import { adjustVInSignature } from '@safe-global/protocol-kit/dist/src/utils/signatures'
 import type { JsonRpcSigner } from 'ethers'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
   const totp = Math.floor(Date.now() / 1000 / 3600)
+
+  // For Rootstock, use the address in lowercase
+  const checksummedAddress =
+    chainId === '30' || chainId === '31' ? proposerAddress.toLowerCase() : toChecksumAddress(proposerAddress, chainId)
 
   const domain = {
     name: 'Safe Transaction Service',
@@ -20,7 +25,7 @@ const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
   }
 
   const message = {
-    delegateAddress: proposerAddress,
+    delegateAddress: checksummedAddress,
     totp,
   }
 
@@ -36,14 +41,18 @@ export const signProposerTypedData = async (chainId: string, proposerAddress: st
   return signTypedData(signer, typedData)
 }
 
-const getProposerDataV1 = (proposerAddress: string) => {
+const getProposerDataV1 = (proposerAddress: string, chainId: string) => {
   const totp = Math.floor(Date.now() / 1000 / 3600)
 
-  return `${proposerAddress}${totp}`
+  // For Rootstock, use the address in lowercase
+  const checksummedAddress =
+    chainId === '30' || chainId === '31' ? proposerAddress.toLowerCase() : toChecksumAddress(proposerAddress, chainId)
+
+  return `${checksummedAddress}${totp}`
 }
 
-export const signProposerData = async (proposerAddress: string, signer: JsonRpcSigner) => {
-  const data = getProposerDataV1(proposerAddress)
+export const signProposerData = async (proposerAddress: string, signer: JsonRpcSigner, chainId: string) => {
+  const data = getProposerDataV1(proposerAddress, chainId)
 
   const signature = await signer.signMessage(data)
 
