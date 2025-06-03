@@ -92,7 +92,7 @@ export const dispatchTxSigning = async (
   safeTx: SafeTransaction,
   provider: Eip1193Provider,
   txId?: string,
-  isLedger?: boolean
+  isLedger?: boolean,
 ): Promise<SafeTransaction> => {
   const sdk = await getSafeSDKWithSigner(provider)
 
