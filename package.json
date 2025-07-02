@@ -24,7 +24,9 @@
     "@web3-onboard/hw-common@npm:^2.3.0": "patch:@web3-onboard/hw-common@npm%3A2.3.3#~/.yarn/patches/@web3-onboard-hw-common-npm-2.3.3-e6221f97e4.patch",
     "@web3-onboard/hw-common@npm:^2.0.4": "patch:@web3-onboard/hw-common@npm%3A2.3.3#~/.yarn/patches/@web3-onboard-hw-common-npm-2.3.3-e6221f97e4.patch",
     "@safe-global/safe-modules-deployments@npm:^2.2.1": "patch:@safe-global/safe-modules-deployments@npm%3A2.2.6#~/.yarn/patches/@safe-global-safe-modules-deployments-npm-2.2.6-78a093615c.patch",
-    "@safe-global/safe-modules-deployments@npm:^2.2.4": "patch:@safe-global/safe-modules-deployments@npm%3A2.2.6#~/.yarn/patches/@safe-global-safe-modules-deployments-npm-2.2.6-78a093615c.patch"
+    "@safe-global/safe-modules-deployments@npm:^2.2.4": "patch:@safe-global/safe-modules-deployments@npm%3A2.2.6#~/.yarn/patches/@safe-global-safe-modules-deployments-npm-2.2.6-78a093615c.patch",
+    "@safe-global/safe-deployments@npm:^1.37.28": "patch:@safe-global/safe-deployments@npm%3A1.37.28#~/.yarn/patches/@safe-global-safe-deployments-npm-1.37.28-060d6063bb.patch",
+    "@safe-global/safe-deployments@npm:^1.37.22": "patch:@safe-global/safe-deployments@npm%3A1.37.28#~/.yarn/patches/@safe-global-safe-deployments-npm-1.37.28-060d6063bb.patch"
   },
   "devDependencies": {
     "husky": "^9.1.6",
