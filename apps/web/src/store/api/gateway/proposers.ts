@@ -40,20 +40,30 @@ export const proposerEndpoints = (
     async onQueryStarted({ chainId, safeAddress, delegateAddress, delegator }, { dispatch, queryFulfilled }) {
       const patchResult = dispatch(
         gatewayApi.util.updateQueryData('getProposers', { chainId, safeAddress }, (draft) => {
-          // Normalize the delegateAddress to checksum format for consistent comparison
-          const normalizedDelegateAddress = toChecksumAddress(delegateAddress, chainId)
-          const normalizedDelegator = toChecksumAddress(delegator, chainId)
+          // Use the same address format as the server call
+          const normalizedDelegateAddress =
+            chainId === '30' || chainId === '31'
+              ? delegateAddress.toLowerCase()
+              : toChecksumAddress(delegateAddress, chainId)
+          const normalizedDelegator =
+            chainId === '30' || chainId === '31' ? delegator.toLowerCase() : toChecksumAddress(delegator, chainId)
 
-          draft.results = draft.results.filter(
-            (delegate: Delegate) => {
-              // Normalize both addresses from the cache for comparison
-              const normalizedCacheDelegate = toChecksumAddress(delegate.delegate, chainId)
-              const normalizedCacheDelegator = toChecksumAddress(delegate.delegator, chainId)
+          draft.results = draft.results.filter((delegate: Delegate) => {
+            // Normalize both addresses from the cache for comparison
+            const normalizedCacheDelegate =
+              chainId === '30' || chainId === '31'
+                ? delegate.delegate.toLowerCase()
+                : toChecksumAddress(delegate.delegate, chainId)
+            const normalizedCacheDelegator =
+              chainId === '30' || chainId === '31'
+                ? delegate.delegator.toLowerCase()
+                : toChecksumAddress(delegate.delegator, chainId)
 
-              // Remove the proposer if both delegate and delegator match
-              return !(normalizedCacheDelegate === normalizedDelegateAddress && normalizedCacheDelegator === normalizedDelegator)
-            },
-          )
+            // Remove the proposer if both delegate and delegator match
+            return !(
+              normalizedCacheDelegate === normalizedDelegateAddress && normalizedCacheDelegator === normalizedDelegator
+            )
+          })
         }),
       )
       try {
