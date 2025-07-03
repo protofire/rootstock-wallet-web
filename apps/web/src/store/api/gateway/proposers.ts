@@ -4,6 +4,7 @@ import type { EndpointBuilder } from '@reduxjs/toolkit/query/react'
 import { deleteDelegate, deleteDelegateV2, postDelegate, postDelegateV2 } from '@safe-global/safe-client-gateway-sdk'
 import { getDelegates } from '@safe-global/safe-gateway-typescript-sdk'
 import type { Delegate, DelegateResponse } from '@safe-global/safe-gateway-typescript-sdk/dist/types/delegates'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 export const proposerEndpoints = (
   builder: EndpointBuilder<ReturnType<typeof fakeBaseQuery<Error>>, 'Submissions', 'gatewayApi'>,
@@ -39,8 +40,19 @@ export const proposerEndpoints = (
     async onQueryStarted({ chainId, safeAddress, delegateAddress, delegator }, { dispatch, queryFulfilled }) {
       const patchResult = dispatch(
         gatewayApi.util.updateQueryData('getProposers', { chainId, safeAddress }, (draft) => {
+          // Normalize the delegateAddress to checksum format for consistent comparison
+          const normalizedDelegateAddress = toChecksumAddress(delegateAddress, chainId)
+          const normalizedDelegator = toChecksumAddress(delegator, chainId)
+
           draft.results = draft.results.filter(
-            (delegate: Delegate) => delegate.delegate !== delegateAddress || delegate.delegator !== delegator,
+            (delegate: Delegate) => {
+              // Normalize both addresses from the cache for comparison
+              const normalizedCacheDelegate = toChecksumAddress(delegate.delegate, chainId)
+              const normalizedCacheDelegator = toChecksumAddress(delegate.delegator, chainId)
+
+              // Remove the proposer if both delegate and delegator match
+              return !(normalizedCacheDelegate === normalizedDelegateAddress && normalizedCacheDelegator === normalizedDelegator)
+            },
           )
         }),
       )
