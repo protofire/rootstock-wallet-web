@@ -66,7 +66,7 @@ const InternalDeleteProposer = ({ wallet, safeAddress, chainId, proposer }: Dele
 
       await deleteProposer({
         chainId,
-        delegateAddress: chainId === '30' || chainId === '31' ? proposer.delegate.toLowerCase() : proposer.delegate,
+        delegateAddress: proposer.delegate, // chainId === '30' || chainId === '31' ? toChecksumAddress(proposer.delegate, chainId) : proposer.delegate,
         delegator: proposer.delegator,
         safeAddress,
         signature,
