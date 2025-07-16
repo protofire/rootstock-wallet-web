@@ -93,7 +93,7 @@ const UpsertProposer = ({ onClose, onSuccess, proposer }: UpsertProposerProps) =
 
       // For Rootstock, use the address in lowercase
       const checksummedAddress =
-        chainId === '30' || chainId === '31' ? cleanAddress : toChecksumAddress(cleanAddress, chainId)
+        chainId === '30' || chainId === '31' ? toChecksumAddress(cleanAddress, chainId) : cleanAddress
 
       const signature = hardwareWallet
         ? await signProposerData(checksummedAddress, signer, chainId)
