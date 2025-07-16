@@ -9,7 +9,7 @@ const useProposers = () => {
     safeAddress,
   } = useSafeInfo()
 
-  return useGetProposersQuery(chainId && safeAddress ? { chainId, safeAddress } : skipToken)
+  return useGetProposersQuery(chainId && safeAddress ? { chainId, safeAddress: safeAddress.toLowerCase() } : skipToken)
 }
 
 export const useIsWalletProposer = () => {

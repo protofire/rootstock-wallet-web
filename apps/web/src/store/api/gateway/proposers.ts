@@ -4,7 +4,6 @@ import type { EndpointBuilder } from '@reduxjs/toolkit/query/react'
 import { deleteDelegate, deleteDelegateV2, postDelegate, postDelegateV2 } from '@safe-global/safe-client-gateway-sdk'
 import { getDelegates } from '@safe-global/safe-gateway-typescript-sdk'
 import type { Delegate, DelegateResponse } from '@safe-global/safe-gateway-typescript-sdk/dist/types/delegates'
-import { toChecksumAddress } from '@/utils/rsk-utils'
 
 export const proposerEndpoints = (
   builder: EndpointBuilder<ReturnType<typeof fakeBaseQuery<Error>>, 'Submissions', 'gatewayApi'>,
@@ -39,32 +38,15 @@ export const proposerEndpoints = (
     // Optimistically update the cache and roll back in case the mutation fails
     async onQueryStarted({ chainId, safeAddress, delegateAddress, delegator }, { dispatch, queryFulfilled }) {
       const patchResult = dispatch(
-        gatewayApi.util.updateQueryData('getProposers', { chainId, safeAddress }, (draft) => {
-          // Use the same address format as the server call
-          const normalizedDelegateAddress =
-            chainId === '30' || chainId === '31'
-              ? delegateAddress.toLowerCase()
-              : toChecksumAddress(delegateAddress, chainId)
-          const normalizedDelegator =
-            chainId === '30' || chainId === '31' ? delegator.toLowerCase() : toChecksumAddress(delegator, chainId)
-
-          draft.results = draft.results.filter((delegate: Delegate) => {
-            // Normalize both addresses from the cache for comparison
-            const normalizedCacheDelegate =
-              chainId === '30' || chainId === '31'
-                ? delegate.delegate.toLowerCase()
-                : toChecksumAddress(delegate.delegate, chainId)
-            const normalizedCacheDelegator =
-              chainId === '30' || chainId === '31'
-                ? delegate.delegator.toLowerCase()
-                : toChecksumAddress(delegate.delegator, chainId)
-
-            // Remove the proposer if both delegate and delegator match
-            return !(
-              normalizedCacheDelegate === normalizedDelegateAddress && normalizedCacheDelegator === normalizedDelegator
+        gatewayApi.util.updateQueryData(
+          'getProposers',
+          { chainId, safeAddress: safeAddress.toLowerCase() },
+          (draft) => {
+            draft.results = draft.results.filter(
+              (delegate: Delegate) => delegate.delegate !== delegateAddress || delegate.delegator !== delegator,
             )
-          })
-        }),
+          },
+        ),
       )
       try {
         await queryFulfilled
@@ -96,21 +78,25 @@ export const proposerEndpoints = (
     // Optimistically update the cache and roll back in case the mutation fails
     async onQueryStarted({ chainId, safeAddress, delegate, delegator, label }, { dispatch, queryFulfilled }) {
       const patchResult = dispatch(
-        gatewayApi.util.updateQueryData('getProposers', { chainId, safeAddress }, (draft) => {
-          const existingProposer = draft.results.findIndex(
-            (proposer: Delegate) => proposer.delegate === delegate && delegator === proposer.delegator,
-          )
+        gatewayApi.util.updateQueryData(
+          'getProposers',
+          { chainId, safeAddress: safeAddress.toLowerCase() },
+          (draft) => {
+            const existingProposer = draft.results.findIndex(
+              (proposer: Delegate) => proposer.delegate === delegate && delegator === proposer.delegator,
+            )
 
-          if (existingProposer !== -1) {
-            // Update the existing delegate's label
-            draft.results[existingProposer] = {
-              ...draft.results[existingProposer],
-              label,
+            if (existingProposer !== -1) {
+              // Update the existing delegate's label
+              draft.results[existingProposer] = {
+                ...draft.results[existingProposer],
+                label,
+              }
+            } else {
+              draft.results.push({ delegate, delegator, label, safe: safeAddress })
             }
-          } else {
-            draft.results.push({ delegate, delegator, label, safe: safeAddress })
-          }
-        }),
+          },
+        ),
       )
       try {
         await queryFulfilled
