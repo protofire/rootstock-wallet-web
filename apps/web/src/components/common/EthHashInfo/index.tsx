@@ -18,18 +18,8 @@ const EthHashInfo = ({
   const chain = useChain(props.chainId || currentChainId)
   const addressBooks = useAllAddressBooks()
 
-  // Always use toChecksumAddress for Rootstock
-  const address = useMemo(() => {
-    // First validate if it's a valid address
-    if (!isAddress(props.address)) {
-      return props.address
-    }
-    // Then apply our checksum
-    return toChecksumAddress(props.address, currentChainId)
-  }, [props.address, currentChainId])
-
-  const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, address) : undefined
-  const name = showName && chain ? addressBooks?.[chain.chainId]?.[address] || props.name : undefined
+  const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, props.address) : undefined
+  const name = showName && chain ? addressBooks?.[chain.chainId]?.[props.address] || props.name : undefined
   // const link = chain && props.hasExplorer ? getBlockExplorerLink(chain, props.address) : undefined
   // const addressBookName = chain ? addressBooks?.[chain.chainId]?.[props.address] : undefined
   // const name = showName ? addressBookName || props.name : undefined
@@ -39,7 +29,7 @@ const EthHashInfo = ({
       prefix={chain?.shortName}
       copyPrefix={settings.shortName.copy}
       {...props}
-      address={address}
+      address={props.address}
       name={name}
       isAddressBookName={!!name}
       customAvatar={props.customAvatar}
