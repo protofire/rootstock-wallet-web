@@ -1,4 +1,4 @@
-import { type ReactElement, useMemo } from 'react'
+import { type ReactElement } from 'react'
 import { useChain } from '@/hooks/useChains'
 import useAllAddressBooks from '@/hooks/useAllAddressBooks'
 import useChainId from '@/hooks/useChainId'
@@ -6,7 +6,6 @@ import { useAppSelector } from '@/store'
 import { selectSettings } from '@/store/settingsSlice'
 import { getBlockExplorerLink } from '@safe-global/utils/utils/chains'
 import SrcEthHashInfo, { type EthHashInfoProps } from './SrcEthHashInfo'
-import { toChecksumAddress, isAddress } from '@/utils/rsk-utils'
 
 const EthHashInfo = ({
   showName = true,
