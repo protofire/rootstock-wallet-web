@@ -1,7 +1,6 @@
 import { useCurrentChain } from '@/hooks/useChains'
-import { useContext, useEffect } from 'react'
+import { useContext, useEffect, type PropsWithChildren } from 'react'
 
-import SignOrExecuteForm from '@/components/tx/SignOrExecuteForm'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import { trackEvent, SETTINGS_EVENTS } from '@/services/analytics'
 import { createSwapOwnerTx, createAddOwnerTx } from '@/services/tx/tx-sender'
@@ -10,10 +9,18 @@ import { upsertAddressBookEntries } from '@/store/addressBookSlice'
 import { SafeTxContext } from '../../SafeTxProvider'
 import type { AddOwnerFlowProps } from '.'
 import type { ReplaceOwnerFlowProps } from '../ReplaceOwner'
-import { checksumAddress } from '@/utils/addresses'
+import { checksumAddress } from '@safe-global/utils/utils/addresses'
 import { SettingsChangeContext } from './context'
+import ReviewTransaction from '@/components/tx/ReviewTransactionV2'
 
-export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwnerFlowProps }) => {
+export const ReviewOwner = ({
+  params,
+  onSubmit,
+  children,
+}: PropsWithChildren<{
+  params: AddOwnerFlowProps | ReplaceOwnerFlowProps
+  onSubmit?: () => void
+}>) => {
   const dispatch = useAppDispatch()
   const { setSafeTx, setSafeTxError } = useContext(SafeTxContext)
   const { safe } = useSafeInfo()
@@ -37,7 +44,7 @@ export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwn
     promise.then(setSafeTx).catch(setSafeTxError)
   }, [removedOwner, newOwner, threshold, setSafeTx, setSafeTxError, chain, safe.deployed])
 
-  const addAddressBookEntryAndSubmit = () => {
+  const addAddressBookEntry = () => {
     if (typeof newOwner.name !== 'undefined') {
       dispatch(
         upsertAddressBookEntries({
@@ -52,9 +59,14 @@ export const ReviewOwner = ({ params }: { params: AddOwnerFlowProps | ReplaceOwn
     trackEvent({ ...SETTINGS_EVENTS.SETUP.OWNERS, label: safe.owners.length })
   }
 
+  const handleSubmit = () => {
+    addAddressBookEntry()
+    onSubmit?.()
+  }
+
   return (
     <SettingsChangeContext.Provider value={params}>
-      <SignOrExecuteForm onSubmit={addAddressBookEntryAndSubmit} showMethodCall />
+      <ReviewTransaction onSubmit={handleSubmit}>{children}</ReviewTransaction>
     </SettingsChangeContext.Provider>
   )
 }

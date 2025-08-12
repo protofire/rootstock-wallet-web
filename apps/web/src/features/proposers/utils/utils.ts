@@ -1,10 +1,11 @@
-import { signTypedData } from '@/utils/web3'
+import { signTypedData } from '@safe-global/utils/utils/web3'
 import { SigningMethod } from '@safe-global/protocol-kit'
 import { adjustVInSignature } from '@safe-global/protocol-kit/dist/src/utils/signatures'
 import type { JsonRpcSigner } from 'ethers'
 import { toChecksumAddress } from '@/utils/rsk-utils'
+import type { TypedData, TypedDataDomain } from '@safe-global/store/gateway/AUTO_GENERATED/messages'
 
-const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
+const getProposerDataV2 = (chainId: string, proposerAddress: string): TypedData => {
   const totp = Math.floor(Date.now() / 1000 / 3600)
 
   // For Rootstock, use the address in lowercase
@@ -14,8 +15,8 @@ const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
   const domain = {
     name: 'Safe Transaction Service',
     version: '1.0',
-    chainId,
-  }
+    chainId: Number(chainId),
+  } as TypedDataDomain
 
   const types = {
     Delegate: [
@@ -33,6 +34,7 @@ const getProposerDataV2 = (chainId: string, proposerAddress: string) => {
     domain,
     types,
     message,
+    primaryType: 'Delegate' as const,
   }
 }
 

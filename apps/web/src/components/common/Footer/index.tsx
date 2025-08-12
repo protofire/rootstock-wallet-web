@@ -9,9 +9,9 @@ import packageJson from '../../../../package.json'
 //import AppstoreButton from '../AppStoreButton'
 import ExternalLink from '../ExternalLink'
 import MUILink from '@mui/material/Link'
-import { HELP_CENTER_URL } from '@/config/constants'
 import darkPalette from '@/components/theme/darkPalette'
 import ProtofireLogo from '@/public/images/protofire-logo.svg'
+import { HELP_CENTER_URL } from '@safe-global/utils/config/constants'
 
 const footerPages = [
   AppRoutes.welcome.index,

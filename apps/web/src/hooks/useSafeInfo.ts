@@ -1,7 +1,10 @@
 import { useMemo } from 'react'
 import isEqual from 'lodash/isEqual'
 import { useAppSelector } from '@/store'
-import { defaultSafeInfo, type ExtendedSafeInfo, selectSafeInfo } from '@/store/safeInfoSlice'
+import { selectSafeInfo } from '@/store/safeInfoSlice'
+import type { ExtendedSafeInfo } from '@safe-global/store/slices/SafeInfo/types'
+import { defaultSafeInfo } from '@safe-global/store/slices/SafeInfo/utils'
+import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const useSafeInfo = (): {
   safe: ExtendedSafeInfo
@@ -15,7 +18,7 @@ const useSafeInfo = (): {
   return useMemo(
     () => ({
       safe: data || defaultSafeInfo,
-      safeAddress: data?.address.value || '',
+      safeAddress: data?.address.value ? toChecksumAddress(data.address.value) : '',
       safeLoaded: !!data,
       safeError: error,
       safeLoading: loading,

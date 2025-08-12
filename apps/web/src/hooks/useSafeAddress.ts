@@ -1,21 +1,8 @@
-import { useMemo } from 'react'
-import { useRouter } from 'next/router'
-import { parsePrefixedAddress } from '@/utils/addresses'
-import useChainId from '@/hooks/useChainId'
+import useSafeInfo from '@/hooks/useSafeInfo'
 
 const useSafeAddress = (): string => {
-  const router = useRouter()
-  const chainId = useChainId()
-  const { safe = '' } = router.query
-  const fullAddress = Array.isArray(safe) ? safe[0] : safe
-
-  const checksummedAddress = useMemo(() => {
-    if (!fullAddress) return ''
-    const { address } = parsePrefixedAddress(fullAddress, chainId)
-    return address
-  }, [fullAddress, chainId])
-
-  return checksummedAddress
+  const { safeAddress } = useSafeInfo()
+  return safeAddress
 }
 
 export default useSafeAddress
