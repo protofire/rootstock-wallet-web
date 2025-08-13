@@ -7,7 +7,7 @@ import WarningIcon from '@/public/images/notifications/warning.svg'
 import css from '@/components/common/ErrorBoundary/styles.module.css'
 import CircularIcon from '../icons/CircularIcon'
 import ExternalLink from '../ExternalLink'
-import { HELP_CENTER_URL } from '@safe-global/utils/config/constants'
+import { HELP_CENTER_URL } from '@/config/constants'
 interface ErrorBoundaryProps {
   error: Error
   componentStack: string
