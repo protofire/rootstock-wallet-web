@@ -9,15 +9,18 @@ import { useChainId } from '../useChainId'
 import useIntervalCounter from '../useIntervalCounter'
 import { Errors, logError } from '@/services/exceptions'
 import { POLLING_INTERVAL } from '@/config/constants'
-import { checksumAddress } from '@safe-global/utils/utils/addresses'
+import { checksumAddress, sameAddress } from '@safe-global/utils/utils/addresses'
 import { useCurrentChain } from '../useChains'
 import { useSafeAddressFromUrl } from '../useSafeAddressFromUrl'
+import useSafeInfo from '../useSafeInfo'
 
 export const useLoadSafeInfo = (): AsyncResult<SafeState> => {
   const address = useSafeAddressFromUrl()
   const chainId = useChainId()
   const chain = useCurrentChain()
   const [pollCount, resetPolling] = useIntervalCounter(POLLING_INTERVAL)
+  const { safe } = useSafeInfo()
+  const isStoredSafeValid = safe.chainId === chainId && sameAddress(safe.address.value, checksumAddress(address))
   const undeployedSafe = useAppSelector((state) => selectUndeployedSafe(state, chainId, checksumAddress(address)))
 
   const [undeployedData, undeployedError] = useAsync<SafeState | undefined>(async () => {
@@ -48,7 +51,7 @@ export const useLoadSafeInfo = (): AsyncResult<SafeState> => {
   }, [cgwError])
 
   // Return stored SafeInfo between polls
-  const safeData = cgwData ?? undeployedData
+  const safeData = cgwData ?? (isStoredSafeValid ? safe : undeployedData)
   const error = cgwError ?? (undeployedSafe ? undeployedError : undefined)
   const loading = cgwLoading
 

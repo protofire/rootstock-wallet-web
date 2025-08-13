@@ -4,7 +4,6 @@ import { useAppSelector } from '@/store'
 import { selectSafeInfo } from '@/store/safeInfoSlice'
 import type { ExtendedSafeInfo } from '@safe-global/store/slices/SafeInfo/types'
 import { defaultSafeInfo } from '@safe-global/store/slices/SafeInfo/utils'
-import { toChecksumAddress } from '@/utils/rsk-utils'
 
 const useSafeInfo = (): {
   safe: ExtendedSafeInfo
@@ -13,12 +12,13 @@ const useSafeInfo = (): {
   safeLoading: boolean
   safeError?: string
 } => {
+
   const { data, error, loading } = useAppSelector(selectSafeInfo, isEqual)
 
   return useMemo(
     () => ({
       safe: data || defaultSafeInfo,
-      safeAddress: data?.address.value ? toChecksumAddress(data.address.value) : '',
+      safeAddress: data?.address.value || '',
       safeLoaded: !!data,
       safeError: error,
       safeLoading: loading,
