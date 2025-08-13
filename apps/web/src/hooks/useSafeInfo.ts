@@ -12,7 +12,6 @@ const useSafeInfo = (): {
   safeLoading: boolean
   safeError?: string
 } => {
-
   const { data, error, loading } = useAppSelector(selectSafeInfo, isEqual)
 
   return useMemo(
