@@ -36,6 +36,14 @@ const InfoSteps = [
       </Typography>
     ),
   },
+  {
+    label: 'Verify with external tools',
+    description: (
+      <Typography>
+        You can additionally cross-verify your transaction data in a third-party tool.
+      </Typography>
+    ),
+  },
 ]
 
 const HardwareWalletStep = [
