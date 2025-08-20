@@ -14,11 +14,11 @@ export const SAFE_APPS_INFURA_TOKEN =
 
 // Tenderly - API docs: https://www.notion.so/Simulate-API-Documentation-6f7009fe6d1a48c999ffeb7941efc104
 export const TENDERLY_SIMULATE_ENDPOINT_URL =
-  process.env.NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL || process.env.EXPO_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL || ''
+  process.env.NEXT_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL || process.env.EXPO_PUBLIC_TENDERLY_SIMULATE_ENDPOINT_URL || 'https://tsp.staging.safe.rootstock.io'
 export const TENDERLY_PROJECT_NAME =
-  process.env.NEXT_PUBLIC_TENDERLY_PROJECT_NAME || process.env.EXPO_PUBLIC_TENDERLY_PROJECT_NAME || ''
+  process.env.NEXT_PUBLIC_TENDERLY_PROJECT_NAME || process.env.EXPO_PUBLIC_TENDERLY_PROJECT_NAME || 'safe'
 export const TENDERLY_ORG_NAME =
-  process.env.NEXT_PUBLIC_TENDERLY_ORG_NAME || process.env.EXPO_PUBLIC_TENDERLY_ORG_NAME || ''
+  process.env.NEXT_PUBLIC_TENDERLY_ORG_NAME || process.env.EXPO_PUBLIC_TENDERLY_ORG_NAME || 'RootstockSafe'
 
 // Help Center
 
