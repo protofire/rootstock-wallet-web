@@ -75,7 +75,7 @@ const SidebarFooter = (): ReactElement => {
       </Track>
       <ListItem>
         <SidebarListItemText>
-          <Typography variant="caption">
+          <Typography variant="caption" sx={{ mx: 'auto', textAlign: 'center' }}>
             Supported by{' '}
             <SvgIcon
               component={ProtofireLogo}
