@@ -1,0 +1,103 @@
+diff --git a/dist/index.js b/dist/index.js
+index 0bd514925bad8ed4f0d4a66f281d3b920bb2cc30..c116be245e6ba6569a70a31a473a8b6194c700e5 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -1,17 +1,51 @@
+ // cannot be dynamically imported
+ import { Buffer } from 'buffer';
+ const TREZOR_DEFAULT_PATH = "m/44'/60'/0'/0";
++const ROOTSTOCK = "m/44'/137'/0'/0";
++const ROOTSTOCK_TEST = "m/44'/37310'/0'/0";
++
+ const assets = [
+     {
+-        label: 'ETH'
++        label: 'RBTC'
+     }
+ ];
+ const DEFAULT_BASE_PATHS = [
+     {
+         label: 'Ethereum Mainnet',
+         value: TREZOR_DEFAULT_PATH
++    },
++    {
++        label: 'Rootstock Path',
++        value: ROOTSTOCK
++    },
++    {
++        label: 'Rootstock Testnet Path',
++        value: ROOTSTOCK_TEST
+     }
+ ];
++
++/**
++ * @description Implements EIP-1191 Address Checksum for Rootstock
++ * @param _address - The address to checksum
++ * @param _chainId - The chain ID (optional)
++ * @returns checksummed address
++ */
++const toRootstockChecksumAddress = async (_address, _chainId = "") => {
++    const ethUtil = await import('ethereumjs-util');
++    // @ts-ignore - Commonjs importing weirdness
++    const { stripHexPrefix, keccak } = ethUtil.default || ethUtil;
++
++    const address = stripHexPrefix(_address).toLowerCase();
++    const chainId = parseInt(_chainId);
++    const prefix = !isNaN(chainId) ? `${chainId.toString()}0x` : "";
++    const hash = keccak(Buffer.from(`${prefix}${address}`)).toString("hex");
++    return ("0x" + address
++        .split("")
++        .map((b, i) => (parseInt(hash[i], 16) >= 8 ? b.toUpperCase() : b))
++        .join("")
++    );
++};
++
+ const getAccount = async ({ publicKey, chainCode, path }, asset, index, provider) => {
+     //@ts-ignore
+     const { default: HDKey } = await import('hdkey');
+@@ -22,7 +56,13 @@ const getAccount = async ({ publicKey, chainCode, path }, asset, index, provider
+     hdk.publicKey = Buffer.from(publicKey, 'hex');
+     hdk.chainCode = Buffer.from(chainCode, 'hex');
+     const dkey = hdk.deriveChild(index);
+-    const address = toChecksumAddress(`0x${publicToAddress(dkey.publicKey, true).toString('hex')}`);
++    let address = toChecksumAddress(`0x${publicToAddress(dkey.publicKey, true).toString('hex')}`);
++
++    // Apply Rootstock checksum for Rootstock paths
++    if (path.includes("m/44'/137") || path.includes("m/44'/37310")) {
++        address = await toRootstockChecksumAddress(address);
++    }
++
+     return {
+         derivationPath: `${path}/${index}`,
+         address,
+@@ -96,8 +136,14 @@ function trezor(options) {
+                     currentChain = chains.find(({ id }) => id === chainId) || currentChain;
+                     ethersProvider = new StaticJsonRpcProvider(currentChain.rpcUrl);
+                     const { publicKey, chainCode, path } = await getPublicKey(derivationPath);
+-                    if (derivationPath !== TREZOR_DEFAULT_PATH) {
+-                        const address = await getAddress(path);
++                    if (derivationPath !== TREZOR_DEFAULT_PATH &&
++                        derivationPath !== ROOTSTOCK &&
++                        derivationPath !== ROOTSTOCK_TEST) {
++                        let address = await getAddress(path);
++                        // Apply Rootstock checksum for custom Rootstock paths
++                        if (derivationPath.includes("m/44'/137") || derivationPath.includes("m/44'/37310")) {
++                            address = await toRootstockChecksumAddress(address);
++                        }
+                         return [
+                             {
+                                 derivationPath,
+@@ -140,7 +186,12 @@ function trezor(options) {
+                         if (!result.success) {
+                             throw new Error(errorMsg);
+                         }
+-                        return result.payload.address;
++                        let address = result.payload.address;
++                        // Apply Rootstock checksum for Rootstock paths
++                        if (path.includes("m/44'/137") || path.includes("m/44'/37310")) {
++                            address = await toRootstockChecksumAddress(address);
++                        }
++                        return address;
+                     }
+                     catch (error) {
+                         console.error(error);

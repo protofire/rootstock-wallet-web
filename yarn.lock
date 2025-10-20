@@ -10146,7 +10146,7 @@ __metadata:
     "@web3-onboard/core": "npm:2.24.0"
     "@web3-onboard/injected-wallets": "npm:^2.11.3"
     "@web3-onboard/ledger": "patch:@web3-onboard/ledger@npm%3A2.3.2#~/.yarn/patches/@web3-onboard-ledger-npm-2.3.2-d2260df52b.patch"
-    "@web3-onboard/trezor": "npm:2.4.3"
+    "@web3-onboard/trezor": "patch:@web3-onboard/trezor@npm%3A2.4.3#~/.yarn/patches/@web3-onboard-trezor-npm-2.4.3-fdd09231e7.patch"
     "@web3-onboard/walletconnect": "npm:^2.6.1"
     blo: "npm:^1.1.1"
     cheerio: "npm:^1.0.0"
@@ -16161,6 +16161,23 @@ __metadata:
     ethereumjs-util: "npm:^7.1.3"
     hdkey: "npm:^2.0.1"
   checksum: 10/48b5cd480683ad606236a7c50a0a9bf52ac4de8e65cc6b83d7d8c2f4c916d5b189a4aca21d22552166284aed3a8378fef9cc7d0f9718383abecc81bc1446b542
+  languageName: node
+  linkType: hard
+
+"@web3-onboard/trezor@patch:@web3-onboard/trezor@npm%3A2.4.3#~/.yarn/patches/@web3-onboard-trezor-npm-2.4.3-fdd09231e7.patch":
+  version: 2.4.3
+  resolution: "@web3-onboard/trezor@patch:@web3-onboard/trezor@npm%3A2.4.3#~/.yarn/patches/@web3-onboard-trezor-npm-2.4.3-fdd09231e7.patch::version=2.4.3&hash=c3774f"
+  dependencies:
+    "@ethereumjs/tx": "npm:^3.4.0"
+    "@ethersproject/providers": "npm:^5.5.0"
+    "@trezor/connect-web": "npm:^9.0.11"
+    "@web3-onboard/common": "npm:^2.3.3"
+    "@web3-onboard/hw-common": "npm:^2.3.0"
+    buffer: "npm:^6.0.3"
+    eth-crypto: "npm:^2.1.0"
+    ethereumjs-util: "npm:^7.1.3"
+    hdkey: "npm:^2.0.1"
+  checksum: 10/ed384352293cd7ef3dc1e86cff50b5a474d4f10644819aea4179d924e0b56a85e465f15627d41807efad8b4bbce01e964a4af64bd0a4a25111c3b53f5127b58f
   languageName: node
   linkType: hard
 

@@ -70,7 +70,7 @@
     "@web3-onboard/core": "2.24.0",
     "@web3-onboard/injected-wallets": "^2.11.3",
     "@web3-onboard/ledger": "patch:@web3-onboard/ledger@npm%3A2.3.2#~/.yarn/patches/@web3-onboard-ledger-npm-2.3.2-d2260df52b.patch",
-    "@web3-onboard/trezor": "2.4.3",
+    "@web3-onboard/trezor": "patch:@web3-onboard/trezor@npm%3A2.4.3#~/.yarn/patches/@web3-onboard-trezor-npm-2.4.3-fdd09231e7.patch",
     "@web3-onboard/walletconnect": "^2.6.1",
     "blo": "^1.1.1",
     "classnames": "^2.5.1",
