@@ -11,7 +11,7 @@ import { loadBeamer } from '@/services/beamer'
 import { useAppDispatch, useAppSelector } from '@/store'
 import { CookieAndTermType, hasConsentFor } from '@/store/cookiesAndTermsSlice'
 import { openCookieBanner } from '@/store/popupSlice'
-import { Link, ListItem, SvgIcon, Typography } from '@mui/material'
+import { Divider, Link, ListItem, SvgIcon, Typography } from '@mui/material'
 import DebugToggle from '../DebugToggle'
 import { HELP_CENTER_URL, IS_PRODUCTION, NEW_SUGGESTION_FORM } from '@/config/constants'
 import { useCurrentChain } from '@/hooks/useChains'
@@ -43,13 +43,22 @@ const SidebarFooter = (): ReactElement => {
   return (
     <SidebarList>
       {!IS_PRODUCTION && (
-        <ListItem disablePadding>
-          <DebugToggle />
-        </ListItem>
+        <>
+          <ListItem disablePadding>
+            <DebugToggle />
+          </ListItem>
+
+          <Divider flexItem />
+        </>
       )}
       <Track {...OVERVIEW_EVENTS.HELP_CENTER}>
         <ListItem disablePadding>
-          <a target="_blank" rel="noopener noreferrer" href={HELP_CENTER_URL} style={{ width: '100%' }}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={HELP_CENTER_URL}
+            style={{ width: '100%', marginTop: '8px' }}
+          >
             <SidebarListItemButton>
               <SidebarListItemIcon color="primary">
                 <HelpCenterIcon />
@@ -63,7 +72,12 @@ const SidebarFooter = (): ReactElement => {
       </Track>{' '}
       <Track {...OVERVIEW_EVENTS.SUGGESTIONS}>
         <ListItem disablePadding>
-          <a target="_blank" rel="noopener noreferrer" href={NEW_SUGGESTION_FORM} style={{ width: '100%' }}>
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            href={NEW_SUGGESTION_FORM}
+            style={{ width: '100%', marginTop: '8px' }}
+          >
             <SidebarListItemButton style={{ backgroundColor: '#12FF80', color: 'black' }}>
               <SidebarListItemIcon color="primary">
                 <SuggestionIcon />
