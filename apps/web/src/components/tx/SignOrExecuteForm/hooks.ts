@@ -110,9 +110,10 @@ export const useTxActions = (): TxActions => {
 
       const connectedWallet = onboard.state.get().wallets[0]
       const isLedger = connectedWallet?.label.toLowerCase().includes('ledger')
+      const isTrezor = connectedWallet?.label.toLowerCase().includes('trezor')
 
       // Otherwise, sign off-chain
-      const signedTx = await dispatchTxSigning(safeTx, signer.provider, txId, isLedger)
+      const signedTx = await dispatchTxSigning(safeTx, signer.provider, txId, isLedger || isTrezor)
       const tx = await _propose(signer.address, signedTx, txId, origin)
       return tx.txId
     }
