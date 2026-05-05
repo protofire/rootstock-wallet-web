@@ -124,7 +124,7 @@ export const useTxFlowApi = (chainId: string, safeAddress: string): WalletSDK | 
 
         const transactions = params.txs.map(({ to, value, data }) => {
           return {
-            to: getAddress(to),
+            to: getAddress(to.toLowerCase()),
             value: BigInt(value).toString(),
             data,
           }

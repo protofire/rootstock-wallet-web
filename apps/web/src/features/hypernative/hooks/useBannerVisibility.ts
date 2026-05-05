@@ -106,6 +106,7 @@ export const useBannerVisibility = (bannerType: BannerType): BannerVisibilityRes
       showBanner,
       loading: false,
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- isTxReportButton/skipBalanceCheck only consulted via the bannerType branch above
   }, [
     bannerType,
     isEnabled,

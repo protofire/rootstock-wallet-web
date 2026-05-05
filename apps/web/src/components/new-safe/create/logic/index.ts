@@ -287,12 +287,16 @@ export const createNewUndeployedSafeWithoutSalt = (
 
   const masterCopy = includeMigration ? safeL1Address : chain.l2 ? safeL2Address : safeL1Address
 
+  // Lowercase owners so ethers' EIP-55 strict check inside protocol-kit accepts them.
+  // RSK uses EIP-1191; user wallets may return mixed-case addresses that ethers rejects as bad checksum.
+  const normalizedOwners = safeAccountConfig.owners.map((o) => o.toLowerCase())
+
   const replayedSafe: Omit<ReplayedSafeProps, 'saltNonce'> = {
     factoryAddress: safeFactoryAddress,
     masterCopy,
     safeAccountConfig: {
       threshold: safeAccountConfig.threshold,
-      owners: safeAccountConfig.owners,
+      owners: normalizedOwners,
       fallbackHandler: fallbackHandlerAddress,
       to: includeMigration && safeToL2SetupAddress ? safeToL2SetupAddress : ZERO_ADDRESS,
       data: includeMigration ? safeToL2SetupInterface.encodeFunctionData('setupToL2', [safeL2Address]) : EMPTY_DATA,

@@ -6,7 +6,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
   SvgIcon,
   Typography,
 } from '@mui/material'
@@ -59,11 +58,7 @@ const InfoWidget = ({ title, steps, variant, startExpanded = false }: InfoWidget
                 onChange={(e, expanded) => expanded && trackEvent({ ...CREATE_SAFE_EVENTS.OPEN_HINT, label: title })}
               >
                 <AccordionSummary
-                  expandIcon={
-                    <IconButton sx={{ '&:hover': { background: ({ palette }) => palette[variant]?.light } }}>
-                      <ExpandMoreIcon sx={{ color: ({ palette }) => palette[variant]?.main }} />
-                    </IconButton>
-                  }
+                  expandIcon={<ExpandMoreIcon sx={{ color: ({ palette }) => palette[variant]?.main }} />}
                 >
                   {title}
                 </AccordionSummary>

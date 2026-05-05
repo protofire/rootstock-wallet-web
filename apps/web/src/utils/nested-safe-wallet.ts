@@ -65,7 +65,7 @@ export const getNestedWallet = (
 
       const transactions = params.txs.map(({ to, value, data }: any) => {
         return {
-          to: getAddress(to),
+          to: getAddress(to.toLowerCase()),
           value: BigInt(value).toString(),
           data,
           operation: 0,

@@ -97,8 +97,10 @@ export default [
       //   @/features/myfeature/services/*   - heavy services should be in contract, accessed via useLoadFeature()
       //
       // See apps/web/docs/feature-architecture.md for details
+      // Upstream's feature-architecture migration is incomplete (213+ warnings on
+      // v1.83.3 itself). Disabled on this fork so lint output is actionable.
       'no-restricted-imports': [
-        'warn',
+        'off',
         {
           patterns: [
             // Block deep imports into feature components (defeats lazy loading)

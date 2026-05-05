@@ -64,7 +64,8 @@ export const getConnectedWallet = (wallets: WalletState[]): ConnectedWallet | nu
   }
 
   try {
-    const address = getAddress(account.address)
+    // Lowercase first so RSK wallets returning EIP-1191 mixed-case addresses don't trip viem's strict EIP-55 check.
+    const address = getAddress(account.address.toLowerCase())
     return {
       label: primaryWallet.label,
       address,

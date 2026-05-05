@@ -83,6 +83,7 @@ export const useAuthToken = (): [AuthTokenResult, SetTokenResult, ClearTokenResu
       window.removeEventListener('storage', handleStorageEvent)
       clearInterval(interval)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- mount-only effect; checkAuthState reads fresh state via the interval/storage events
   }, [])
 
   return [authState, setToken, clearToken]

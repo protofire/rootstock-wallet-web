@@ -10,15 +10,18 @@ export const IS_TEST_E2E = APP_ENV === 'cypress'
 export const COMMIT_HASH = process.env.NEXT_PUBLIC_COMMIT_HASH || ''
 
 // default chain ID's as provided to the environment
-export const DEFAULT_TESTNET_CHAIN_ID = +(process.env.NEXT_PUBLIC_DEFAULT_TESTNET_CHAIN_ID ?? chains.sep)
-export const DEFAULT_MAINNET_CHAIN_ID = +(process.env.NEXT_PUBLIC_DEFAULT_MAINNET_CHAIN_ID ?? chains.eth)
+export const DEFAULT_TESTNET_CHAIN_ID = +(31)
+export const DEFAULT_MAINNET_CHAIN_ID = +(30)
 
 // default chain ID used in the application
 export const DEFAULT_CHAIN_ID = IS_PRODUCTION ? DEFAULT_MAINNET_CHAIN_ID : DEFAULT_TESTNET_CHAIN_ID
 
 export const GATEWAY_URL_PRODUCTION =
-  process.env.NEXT_PUBLIC_GATEWAY_URL_PRODUCTION || 'https://safe-client.safe.global'
-export const GATEWAY_URL_STAGING = process.env.NEXT_PUBLIC_GATEWAY_URL_STAGING || 'https://safe-client.staging.5afe.dev'
+  process.env.NEXT_PUBLIC_GATEWAY_URL_PRODUCTION || 'https://gateway.safe.rootstock.io'
+export const GATEWAY_URL_STAGING = process.env.NEXT_PUBLIC_GATEWAY_URL_STAGING || 'https://gateway.staging.safe.rootstock.io'
+
+// Indexing status page
+export const STATUS_PAGE = `https://tx-status-app.safe.protofire.io/?serviceUrl=${IS_PRODUCTION ? GATEWAY_URL_PRODUCTION : GATEWAY_URL_STAGING}`
 
 // Status page
 export const STATUS_PAGE_URL = process.env.NEXT_PUBLIC_SAFE_STATUS_PAGE_URL || 'https://status.safe.global'

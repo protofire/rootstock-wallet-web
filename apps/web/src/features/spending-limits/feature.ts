@@ -8,7 +8,7 @@ import SpendingLimitsLoader from './components/SpendingLimitsLoader'
 import { loadSpendingLimits } from './services/spendingLimitLoader'
 import { createNewSpendingLimitTx, dispatchSpendingLimitTxExecution } from './services/spendingLimitExecution'
 
-export default {
+const SpendingLimitsFeature = {
   // Components
   SpendingLimitsSettings,
   SpendingLimitRow,
@@ -23,3 +23,5 @@ export default {
   createNewSpendingLimitTx,
   dispatchSpendingLimitTxExecution,
 }
+
+export default SpendingLimitsFeature

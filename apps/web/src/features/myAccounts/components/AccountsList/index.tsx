@@ -2,16 +2,15 @@ import FilteredSafes from '../FilteredSafes'
 import PinnedSafes from '../PinnedSafes'
 import CurrentSafe from '../CurrentSafe'
 import ConnectWalletPrompt from '../ConnectWalletPrompt'
-import { type AllSafeItems, type AllSafeItemsGrouped, getComparator } from '@/hooks/safes'
+import SafesList from '../SafesList'
+import { type AllSafeItems, type AllSafeItemsGrouped, getComparator, isMultiChainSafeItem } from '@/hooks/safes'
 import SafeSelectionModal from '../SafeSelectionModal'
-import MigrationPrompt from '../MigrationPrompt'
 import { useAppSelector } from '@/store'
 import { selectOrderByPreference } from '@/store/orderByPreferenceSlice'
 import useSafeSelectionModal from '../../hooks/useSafeSelectionModal'
-import useMigrationPrompt from '../../hooks/useMigrationPrompt'
 import useWallet from '@/hooks/wallets/useWallet'
-import { useMemo, useCallback } from 'react'
-import { Typography } from '@mui/material'
+import { useMemo } from 'react'
+import { Box, Typography } from '@mui/material'
 
 const AccountsList = ({
   searchQuery,
@@ -32,44 +31,52 @@ const AccountsList = ({
   // Safe selection modal hook
   const modal = useSafeSelectionModal()
 
-  // Migration prompt hook
-  const migration = useMigrationPrompt()
-
   const allSafes = useMemo<AllSafeItems>(
     () => [...(safes.allMultiChainSafes ?? []), ...(safes.allSingleSafes ?? [])].sort(sortComparator),
     [safes.allMultiChainSafes, safes.allSingleSafes, sortComparator],
   )
 
-  // Handle migration flow - opens modal (user must explicitly select safes)
-  const handleMigrationProceed = useCallback(() => {
-    modal.open()
-  }, [modal])
+  // Non-pinned safes — owned safes returned by the gateway that the user hasn't manually pinned.
+  // Surfaced in the "Accounts" section so wallets connected on RSK don't have to click "Add Safes"
+  // before seeing their existing Safes (matches legacy rootstock-stg UX).
+  const nonPinnedSafes = useMemo<AllSafeItems>(
+    () =>
+      allSafes.filter((item) =>
+        isMultiChainSafeItem(item) ? !item.safes.some((s) => s.isPinned) : !item.isPinned,
+      ),
+    [allSafes],
+  )
 
   if (searchQuery) {
     return <FilteredSafes searchQuery={searchQuery} allSafes={allSafes} onLinkClick={onLinkClick} />
   }
 
-  // Show connect wallet prompt only when not connected AND no pinned safes
-  // If user has pinned safes in local storage, show them regardless of wallet connection
-  if (!isConnected && !migration.hasPinnedSafes) {
+  // Show connect wallet prompt only when not connected AND no safes (pinned or otherwise) to display
+  if (!isConnected && allSafes.length === 0) {
     return <ConnectWalletPrompt />
   }
 
   return (
     <>
-      {/* Security check prompt for users with safes but none pinned */}
-      {migration.shouldShowPrompt && <MigrationPrompt onProceed={handleMigrationProceed} />}
-
       <CurrentSafe allSafes={allSafes} onLinkClick={onLinkClick} />
       <PinnedSafes allSafes={allSafes} onLinkClick={onLinkClick} onOpenSelectionModal={modal.open} />
 
-      {!migration.hasPinnedSafes && !migration.shouldShowPrompt && (
+      {nonPinnedSafes.length > 0 && (
+        <Box data-testid="all-accounts" mb={2}>
+          <Typography variant="h5" fontWeight={700} mb={2}>
+            Accounts ({nonPinnedSafes.length})
+          </Typography>
+          <SafesList safes={nonPinnedSafes} onLinkClick={onLinkClick} />
+        </Box>
+      )}
+
+      {allSafes.length === 0 && (
         <Typography data-testid="empty-safe-list" color="text.secondary" variant="body2" textAlign="center" py={3}>
           You don&apos;t have any safes yet
         </Typography>
       )}
 
-      {/* Safe selection modal - only way to manage safes */}
+      {/* Safe selection modal - kept available via Manage trusted Safes */}
       <SafeSelectionModal modal={modal} />
     </>
   )
