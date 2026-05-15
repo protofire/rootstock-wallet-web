@@ -10,6 +10,7 @@ import type {
 import type { Chain, WalletInit, WalletInterface } from '@web3-onboard/common'
 import type { Account, Asset, BasePath, DerivationPath, ScanAccountsOptions } from '@web3-onboard/hw-common'
 import type { Subscription } from 'rxjs'
+import { safeGetAddress } from '@safe-global/utils/utils/addresses'
 
 const LEDGER_LIVE_PATH: DerivationPath = "44'/60'"
 const LEDGER_LEGACY_PATH: DerivationPath = "44'/60'/0'"
@@ -338,10 +339,12 @@ export function ledgerModule(): WalletInit {
           provider: InstanceType<typeof JsonRpcProvider>
           asset: Asset
         }): Promise<Account> {
-          // Ledger returns addresses in EIP-55. Don't convert to EIP-1191 here:
-          // ethers v6 strictly validates checksums and rejects EIP-1191. Display
-          // code applies EIP-1191 via checksumAddress(addr, chainId) when on RSK.
-          const { address } = await ledgerSdk.getAddress(args.derivationPath)
+          // The Ledger device returns EIP-1191 form on Rootstock derivation paths,
+          // which ethers v6 rejects (it strictly enforces EIP-55). Normalize via
+          // safeGetAddress so provider.getBalance accepts it. Display code applies
+          // EIP-1191 via checksumAddress(addr, chainId) when on RSK.
+          const { address: rawAddress } = await ledgerSdk.getAddress(args.derivationPath)
+          const address = safeGetAddress(rawAddress) as `0x${string}`
           const balance = await args.provider.getBalance(address)
 
           return {
