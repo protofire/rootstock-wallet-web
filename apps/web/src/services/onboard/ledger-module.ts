@@ -10,9 +10,16 @@ import type {
 import type { Chain, WalletInit, WalletInterface } from '@web3-onboard/common'
 import type { Account, Asset, BasePath, DerivationPath, ScanAccountsOptions } from '@web3-onboard/hw-common'
 import type { Subscription } from 'rxjs'
+import { toEip1191ChecksumAddress } from '@safe-global/utils/utils/rsk-utils'
 
 const LEDGER_LIVE_PATH: DerivationPath = "44'/60'"
 const LEDGER_LEGACY_PATH: DerivationPath = "44'/60'/0'"
+// Rootstock derivation paths — see https://dev.rootstock.io/concepts/account-based-addresses/#derivation-path-info
+const ROOTSTOCK_MAINNET_PATH = "44'/137'/0'/0" as DerivationPath
+const ROOTSTOCK_TESTNET_PATH = "44'/37310'/0'/0" as DerivationPath
+
+const ROOTSTOCK_MAINNET_CHAIN_ID = '30'
+const ROOTSTOCK_TESTNET_CHAIN_ID = '31'
 
 const DEFAULT_BASE_PATHS: Array<BasePath> = [
   {
@@ -23,7 +30,22 @@ const DEFAULT_BASE_PATHS: Array<BasePath> = [
     label: 'Ledger Legacy',
     value: LEDGER_LEGACY_PATH,
   },
+  {
+    label: 'Rootstock',
+    value: ROOTSTOCK_MAINNET_PATH,
+  },
+  {
+    label: 'Rootstock Testnet',
+    value: ROOTSTOCK_TESTNET_PATH,
+  },
 ]
+
+// Returns the EIP-1191 chain ID if the path is a Rootstock derivation, otherwise undefined.
+function getRootstockChainIdForPath(derivationPath: string): string | undefined {
+  if (derivationPath.includes("44'/137'")) return ROOTSTOCK_MAINNET_CHAIN_ID
+  if (derivationPath.includes("44'/37310'")) return ROOTSTOCK_TESTNET_CHAIN_ID
+  return undefined
+}
 
 const DEFAULT_ASSETS: Array<Asset> = [
   {
@@ -278,7 +300,12 @@ export function ledgerModule(): WalletInit {
           const provider = new JsonRpcProvider(currentChain.rpcUrl)
 
           // Only return exact account from custom derivation
-          if (args.derivationPath !== LEDGER_LIVE_PATH && args.derivationPath !== LEDGER_LEGACY_PATH) {
+          if (
+            args.derivationPath !== LEDGER_LIVE_PATH &&
+            args.derivationPath !== LEDGER_LEGACY_PATH &&
+            args.derivationPath !== ROOTSTOCK_MAINNET_PATH &&
+            args.derivationPath !== ROOTSTOCK_TESTNET_PATH
+          ) {
             const account = await deriveAccount({ ...args, provider })
             return [account]
           }
@@ -318,7 +345,9 @@ export function ledgerModule(): WalletInit {
           provider: InstanceType<typeof JsonRpcProvider>
           asset: Asset
         }): Promise<Account> {
-          const { address } = await ledgerSdk.getAddress(args.derivationPath)
+          const { address: rawAddress } = await ledgerSdk.getAddress(args.derivationPath)
+          const rskChainId = getRootstockChainIdForPath(args.derivationPath)
+          const address = rskChainId ? (toEip1191ChecksumAddress(rawAddress, rskChainId) as `0x${string}`) : rawAddress
           const balance = await args.provider.getBalance(address)
 
           return {
