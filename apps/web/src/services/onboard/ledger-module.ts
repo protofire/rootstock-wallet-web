@@ -390,18 +390,29 @@ async function getLedgerSdk() {
       return dmk.disconnect({ sessionId })
     },
     getAddress: async (derivationPath: string): Promise<GetAddressDAOutput> => {
-      return waitForAction(signer.getAddress(derivationPath, { checkOnDevice: false }))
+      // For Rootstock paths (44'/137' mainnet, 44'/37310' testnet) skip auto-opening the
+      // Ethereum app — the RSK app handles these paths, and the Ethereum app rejects
+      // them with error 6a15. The user must have either the RSK or Ethereum app open.
+      const skipOpenApp = isRootstockPath(derivationPath)
+      return waitForAction(signer.getAddress(derivationPath, { checkOnDevice: false, skipOpenApp }))
     },
     signMessage: async (derivationPath: string, message: string | Uint8Array): Promise<SignPersonalMessageDAOutput> => {
-      return waitForAction(signer.signMessage(derivationPath, message))
+      const skipOpenApp = isRootstockPath(derivationPath)
+      return waitForAction(signer.signMessage(derivationPath, message, { skipOpenApp }))
     },
     signTransaction: async (derivationPath: string, transaction: Uint8Array): Promise<SignTransactionDAOutput> => {
-      return waitForAction(signer.signTransaction(derivationPath, transaction))
+      const skipOpenApp = isRootstockPath(derivationPath)
+      return waitForAction(signer.signTransaction(derivationPath, transaction, { skipOpenApp }))
     },
     signTypedData: async (derivationPath: string, typedData: TypedData): Promise<SignTypedDataDAOutput> => {
-      return waitForAction(signer.signTypedData(derivationPath, typedData))
+      const skipOpenApp = isRootstockPath(derivationPath)
+      return waitForAction(signer.signTypedData(derivationPath, typedData, { skipOpenApp }))
     },
   }
+}
+
+function isRootstockPath(derivationPath: string): boolean {
+  return getRootstockChainIdForPath(derivationPath) !== undefined
 }
 
 async function waitForAction<Output, Error extends DmkError, IntermediateValue>({
