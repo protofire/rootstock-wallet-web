@@ -10,16 +10,12 @@ import type {
 import type { Chain, WalletInit, WalletInterface } from '@web3-onboard/common'
 import type { Account, Asset, BasePath, DerivationPath, ScanAccountsOptions } from '@web3-onboard/hw-common'
 import type { Subscription } from 'rxjs'
-import { toEip1191ChecksumAddress } from '@safe-global/utils/utils/rsk-utils'
 
 const LEDGER_LIVE_PATH: DerivationPath = "44'/60'"
 const LEDGER_LEGACY_PATH: DerivationPath = "44'/60'/0'"
 // Rootstock derivation paths — see https://dev.rootstock.io/concepts/account-based-addresses/#derivation-path-info
 const ROOTSTOCK_MAINNET_PATH = "44'/137'/0'/0" as DerivationPath
 const ROOTSTOCK_TESTNET_PATH = "44'/37310'/0'/0" as DerivationPath
-
-const ROOTSTOCK_MAINNET_CHAIN_ID = '30'
-const ROOTSTOCK_TESTNET_CHAIN_ID = '31'
 
 const DEFAULT_BASE_PATHS: Array<BasePath> = [
   {
@@ -40,11 +36,8 @@ const DEFAULT_BASE_PATHS: Array<BasePath> = [
   },
 ]
 
-// Returns the EIP-1191 chain ID if the path is a Rootstock derivation, otherwise undefined.
-function getRootstockChainIdForPath(derivationPath: string): string | undefined {
-  if (derivationPath.includes("44'/137'")) return ROOTSTOCK_MAINNET_CHAIN_ID
-  if (derivationPath.includes("44'/37310'")) return ROOTSTOCK_TESTNET_CHAIN_ID
-  return undefined
+function isRootstockPath(derivationPath: string): boolean {
+  return derivationPath.includes("44'/137'") || derivationPath.includes("44'/37310'")
 }
 
 const DEFAULT_ASSETS: Array<Asset> = [
@@ -345,9 +338,10 @@ export function ledgerModule(): WalletInit {
           provider: InstanceType<typeof JsonRpcProvider>
           asset: Asset
         }): Promise<Account> {
-          const { address: rawAddress } = await ledgerSdk.getAddress(args.derivationPath)
-          const rskChainId = getRootstockChainIdForPath(args.derivationPath)
-          const address = rskChainId ? (toEip1191ChecksumAddress(rawAddress, rskChainId) as `0x${string}`) : rawAddress
+          // Ledger returns addresses in EIP-55. Don't convert to EIP-1191 here:
+          // ethers v6 strictly validates checksums and rejects EIP-1191. Display
+          // code applies EIP-1191 via checksumAddress(addr, chainId) when on RSK.
+          const { address } = await ledgerSdk.getAddress(args.derivationPath)
           const balance = await args.provider.getBalance(address)
 
           return {
@@ -409,10 +403,6 @@ async function getLedgerSdk() {
       return waitForAction(signer.signTypedData(derivationPath, typedData, { skipOpenApp }))
     },
   }
-}
-
-function isRootstockPath(derivationPath: string): boolean {
-  return getRootstockChainIdForPath(derivationPath) !== undefined
 }
 
 async function waitForAction<Output, Error extends DmkError, IntermediateValue>({
