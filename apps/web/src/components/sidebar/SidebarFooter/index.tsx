@@ -19,17 +19,14 @@ import ProtofireLogo from '@/public/images/protofire.svg'
 import SuggestionIcon from '@/public/images/common/lightbulb.svg'
 import darkPalette from '@/components/theme/darkPalette'
 import IndexingStatus from '@/components/sidebar/IndexingStatus'
-import { useIsOfficialHost } from '@/hooks/useIsOfficialHost'
 import LicensedLogo from '@/public/images/logo-licensed.svg'
 import TEMPLATE_CONFIG from '@/config/templateConfig'
-import IndexingStatusLegacy from '../IndexingStatus/IndexingStatusLegacy'
 
 const SidebarFooter = (): ReactElement => {
   const dispatch = useAppDispatch()
   const chain = useCurrentChain()
   const hasBeamerConsent = useAppSelector((state) => hasConsentFor(state, CookieAndTermType.UPDATES))
   const theme = useTheme()
-  const isOfficialHost = useIsOfficialHost()
 
   useEffect(() => {
     // Initialise Beamer when consent was previously given
@@ -120,25 +117,27 @@ const SidebarFooter = (): ReactElement => {
           </Box>
         </SidebarListItemText>
       </ListItem>
-      {isOfficialHost ? (
-        <Stack direction="row" alignItems="center" spacing={1} my={0.5} mx={1}>
-          <IndexingStatus />
-          <Box ml="auto !important">
-            <Track {...OVERVIEW_EVENTS.WHATS_NEW} mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: "What's New" }}>
-              <IconButton onClick={handleBeamer} id={BEAMER_SELECTOR} data-testid="list-item-whats-new" color="primary">
-                <SvgIcon component={BeamerIcon} inheritViewBox fontSize="small" />
-              </IconButton>
-            </Track>
-          </Box>
-          <Track {...OVERVIEW_EVENTS.HELP_CENTER} mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: 'Help Center' }}>
-            <IconButton href={HELP_CENTER_URL} target="_blank" data-testid="list-item-need-help" color="primary">
-              <SvgIcon component={HelpCenterIcon} inheritViewBox fontSize="small" />
+      <Stack direction="row" alignItems="center" spacing={1} my={0.5} mx={1}>
+        <IndexingStatus />
+        <Box ml="auto !important">
+          <Track
+            {...OVERVIEW_EVENTS.WHATS_NEW}
+            mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: "What's New" }}
+          >
+            <IconButton onClick={handleBeamer} id={BEAMER_SELECTOR} data-testid="list-item-whats-new" color="primary">
+              <SvgIcon component={BeamerIcon} inheritViewBox fontSize="small" />
             </IconButton>
           </Track>
-        </Stack>
-      ) : (
-        <IndexingStatusLegacy />
-      )}
+        </Box>
+        <Track
+          {...OVERVIEW_EVENTS.HELP_CENTER}
+          mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: 'Help Center' }}
+        >
+          <IconButton href={HELP_CENTER_URL} target="_blank" data-testid="list-item-need-help" color="primary">
+            <SvgIcon component={HelpCenterIcon} inheritViewBox fontSize="small" />
+          </IconButton>
+        </Track>
+      </Stack>
     </>
   )
 }
