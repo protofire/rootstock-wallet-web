@@ -1,18 +1,8 @@
-import { type ReactElement, useEffect } from 'react'
-import { BEAMER_SELECTOR, loadBeamer } from '@/services/beamer'
-import { useAppDispatch, useAppSelector } from '@/store'
-import { CookieAndTermType, hasConsentFor } from '@/store/cookiesAndTermsSlice'
-import { openCookieBanner } from '@/store/popupSlice'
-import BeamerIcon from '@/public/images/sidebar/whats-new.svg'
+import { type ReactElement } from 'react'
 import HelpCenterIcon from '@/public/images/sidebar/help-center.svg'
-import { Divider, IconButton, ListItem, Stack, SvgIcon, Box, useTheme, Link } from '@mui/material'
+import { Divider, ListItem, Stack, SvgIcon, Box, useTheme, Link } from '@mui/material'
 import DebugToggle from '../DebugToggle'
 import { IS_PRODUCTION } from '@/config/constants'
-import Track from '@/components/common/Track'
-import { OVERVIEW_EVENTS } from '@/services/analytics/events/overview'
-import { MixpanelEventParams } from '@/services/analytics/mixpanel-events'
-import { useCurrentChain } from '@/hooks/useChains'
-import { HELP_CENTER_URL } from '@safe-global/utils/config/constants'
 import { NEW_SUGGESTION_FORM, PROTOFIRE_SUPPORT_LINK } from '@/config/constants.extra'
 import { SidebarListItemButton, SidebarListItemIcon, SidebarListItemText } from '../SidebarList'
 import ProtofireLogo from '@/public/images/protofire.svg'
@@ -23,23 +13,7 @@ import LicensedLogo from '@/public/images/logo-licensed.svg'
 import TEMPLATE_CONFIG from '@/config/templateConfig'
 
 const SidebarFooter = (): ReactElement => {
-  const dispatch = useAppDispatch()
-  const chain = useCurrentChain()
-  const hasBeamerConsent = useAppSelector((state) => hasConsentFor(state, CookieAndTermType.UPDATES))
   const theme = useTheme()
-
-  useEffect(() => {
-    // Initialise Beamer when consent was previously given
-    if (hasBeamerConsent && chain?.shortName) {
-      loadBeamer(chain.shortName)
-    }
-  }, [hasBeamerConsent, chain?.shortName])
-
-  const handleBeamer = () => {
-    if (!hasBeamerConsent) {
-      dispatch(openCookieBanner({ warningKey: CookieAndTermType.UPDATES }))
-    }
-  }
 
   return (
     <>
@@ -119,24 +93,6 @@ const SidebarFooter = (): ReactElement => {
       </ListItem>
       <Stack direction="row" alignItems="center" spacing={1} my={0.5} mx={1}>
         <IndexingStatus />
-        <Box ml="auto !important">
-          <Track
-            {...OVERVIEW_EVENTS.WHATS_NEW}
-            mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: "What's New" }}
-          >
-            <IconButton onClick={handleBeamer} id={BEAMER_SELECTOR} data-testid="list-item-whats-new" color="primary">
-              <SvgIcon component={BeamerIcon} inheritViewBox fontSize="small" />
-            </IconButton>
-          </Track>
-        </Box>
-        <Track
-          {...OVERVIEW_EVENTS.HELP_CENTER}
-          mixpanelParams={{ [MixpanelEventParams.SIDEBAR_ELEMENT]: 'Help Center' }}
-        >
-          <IconButton href={HELP_CENTER_URL} target="_blank" data-testid="list-item-need-help" color="primary">
-            <SvgIcon component={HelpCenterIcon} inheritViewBox fontSize="small" />
-          </IconButton>
-        </Track>
       </Stack>
     </>
   )
