@@ -4,14 +4,14 @@ import ErrorMessage from '@/components/tx/ErrorMessage'
 import useChainId from '@/hooks/useChainId'
 import { useHasFeature } from '@/hooks/useChains'
 import { FEATURES } from '@safe-global/utils/utils/chains'
-import { SUNSET_BANNERS } from '@/config/constants.extra'
+import { BANNERS } from '@/config/constants.extra'
 
-const SunsetBanner = (): ReactElement | null => {
+const WarningBanner = (): ReactElement | null => {
   const chainId = useChainId()
-  const isSunsetBannerEnabled = useHasFeature(FEATURES.SUNSET_BANNER)
-  const banner = SUNSET_BANNERS[chainId]
+  const isWarningBannerEnabled = useHasFeature(FEATURES.WARNING_BANNER)
+  const banner = BANNERS[chainId]
 
-  if (!isSunsetBannerEnabled || !banner) return null
+  if (!isWarningBannerEnabled || !banner) return null
 
   return (
     <ErrorMessage level="warning" title={banner.title}>
@@ -20,4 +20,4 @@ const SunsetBanner = (): ReactElement | null => {
   )
 }
 
-export default SunsetBanner
+export default WarningBanner

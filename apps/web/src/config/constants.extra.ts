@@ -18,15 +18,14 @@ export const OZ_SAFE_UTILS_URL = 'https://safeutils.openzeppelin.com'
 export const PROTOFIRE_SAFE_UTILS_URL = 'https://safeutils.protofire.io'
 
 // Sunset banners per chain ID
-const CROSSFI_SUNSET_BANNER = {
-  title: 'CrossFi Safe Support Sunsetting',
+const RSK_WARNING_BANNER = {
+  title: 'Transaction Indexing Issues on Rootstock Mainnet',
   description:
-    'Dear users, Support for Safe on CrossFi will end soon. Please withdraw your funds until April 17, 2029.',
+    'We are currently experiencing transaction indexing issues on Rootstock Mainnet due to a known bug in the RSK node\'s tracing implementation. Some transactions or Safes may not appear correctly in the interface. Our team is actively working on a fix and will notify you as soon as it is available. We apologize for the inconvenience.',
 }
 
-export const SUNSET_BANNERS: Record<string, { title: string; description: string }> = {
-  '4158': CROSSFI_SUNSET_BANNER,
-  '4157': CROSSFI_SUNSET_BANNER,
+export const BANNERS: Record<string, { title: string; description: string }> = {
+  '30': RSK_WARNING_BANNER,
 }
 
 // TODO: move to types
