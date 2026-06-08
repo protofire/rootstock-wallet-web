@@ -19,9 +19,9 @@ export const PROTOFIRE_SAFE_UTILS_URL = 'https://safeutils.protofire.io'
 
 // Sunset banners per chain ID
 const RSK_WARNING_BANNER = {
-  title: 'Transaction Indexing Issues on Rootstock Mainnet',
+  title: 'Scheduled Maintenance — Transaction Service Migration',
   description:
-    'We are currently experiencing transaction indexing issues on Rootstock Mainnet due to a known bug in the RSK node\'s tracing implementation. Some transactions or Safes may not appear correctly in the interface. Our team is actively working on a fix and will notify you as soon as it is available. We apologize for the inconvenience.',
+    "Due to a known bug in the RSK node's tracing implementation (https://github.com/rsksmart/rskj/issues/3543) that prevents us from indexing the network properly, we are switching to an event-based indexing mechanism. As a result, queued transactions will be lost and will need to be recreated, and Safes created with older contract versions (1.1.1 and 1.2.0) may not be recognized by the interface. If you are unable to load your Safe, please reach out to our support team at https://safe-support.protofire.io. We apologize for the inconvenience and thank you for your patience.",
 }
 
 export const BANNERS: Record<string, { title: string; description: string }> = {
