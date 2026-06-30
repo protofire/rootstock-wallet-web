@@ -41,6 +41,33 @@ function isRootstockPath(derivationPath: string): boolean {
   return derivationPath.includes("44'/137'") || derivationPath.includes("44'/37310'")
 }
 
+type LedgerFeeParams = {
+  gasPrice?: string | number | bigint | null
+  maxFeePerGas?: string | number | bigint | null
+  maxPriorityFeePerGas?: string | number | bigint | null
+}
+
+/**
+ * Returns the fee fields and an explicit transaction `type` for a Ledger-signed transaction.
+ *
+ * ethers infers a typed transaction unless `type` is pinned — EIP-2930 (`0x01`) even for a
+ * gasPrice-only tx, EIP-1559 (`0x02`) when fee-cap fields are set. Legacy-only chains such as
+ * Rootstock reject typed transactions: the node returns a generic "Internal server error".
+ * A transaction without EIP-1559 fee caps must therefore be serialized as legacy (type 0).
+ */
+export const getLedgerTransactionFeeParams = (txParams: LedgerFeeParams) => {
+  // A type-2 (EIP-1559) tx requires BOTH fee caps; any other combination is a legacy (type 0) tx.
+  // Requiring both also avoids ethers throwing "priorityFee cannot be more than maxFee" when only
+  // one cap is supplied.
+  const isLegacy = !(txParams.maxFeePerGas && txParams.maxPriorityFeePerGas)
+  return {
+    type: isLegacy ? 0 : 2,
+    gasPrice: isLegacy && txParams.gasPrice ? BigInt(txParams.gasPrice) : null,
+    maxFeePerGas: !isLegacy && txParams.maxFeePerGas ? BigInt(txParams.maxFeePerGas) : null,
+    maxPriorityFeePerGas: !isLegacy && txParams.maxPriorityFeePerGas ? BigInt(txParams.maxPriorityFeePerGas) : null,
+  }
+}
+
 const DEFAULT_ASSETS: Array<Asset> = [
   {
     label: 'ETH',
@@ -164,12 +191,10 @@ export function ledgerModule(): WalletInit {
                 })) as string)
 
               const transaction = Transaction.from({
+                ...getLedgerTransactionFeeParams(txParams),
                 chainId: BigInt(currentChain.id),
                 data: txParams.data,
                 gasLimit: gasLimit ? BigInt(gasLimit) : null,
-                gasPrice: txParams.gasPrice ? BigInt(txParams.gasPrice) : null,
-                maxFeePerGas: txParams.maxFeePerGas ? BigInt(txParams.maxFeePerGas) : null,
-                maxPriorityFeePerGas: txParams.maxPriorityFeePerGas ? BigInt(txParams.maxPriorityFeePerGas) : null,
                 nonce: parseInt(nonce, 16),
                 to: txParams.to,
                 value: txParams.value ? BigInt(txParams.value) : null,
