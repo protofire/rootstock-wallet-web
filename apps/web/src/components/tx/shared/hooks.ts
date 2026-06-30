@@ -14,7 +14,7 @@ import { sameString } from '@safe-global/protocol-kit/dist/src/utils'
 import useSafeInfo from '@/hooks/useSafeInfo'
 import useWallet, { useSigner } from '@/hooks/wallets/useWallet'
 import useOnboard from '@/hooks/wallets/useOnboard'
-import { isSmartContractWallet, isHardwareWallet } from '@/utils/wallets'
+import { isSmartContractWallet } from '@/utils/wallets'
 import {
   dispatchProposerTxSigning,
   dispatchOnChainSigning,
@@ -145,13 +145,8 @@ export const useTxActions = (): TxActions => {
 
       let tx: TransactionDetails | undefined
       let rePropose = false
-      // Relayed txs (the relayer is msg.sender) and hardware-wallet txs (the broadcast sender
-      // may not match the owner on chains like Rootstock) cannot rely on the pre-validated (v=1)
-      // "msg.sender" approval the SDK appends for the executing owner — execTransaction reverts
-      // with GS025. Collect a real signature first so the tx is fully signed and execution is
-      // independent of msg.sender.
-      const mustBeFullySigned = isRelayed || (!!wallet && isHardwareWallet(wallet))
-      if (mustBeFullySigned && safeTx.signatures.size < safe.threshold) {
+      // Relayed transactions must be fully signed, so request a final signature if needed
+      if (isRelayed && safeTx.signatures.size < safe.threshold) {
         safeTx = await signRelayedTx(safeTx)
         rePropose = true
       }
