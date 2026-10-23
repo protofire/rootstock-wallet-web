@@ -1,0 +1,58 @@
+diff --git a/dist/index.js b/dist/index.js
+index 559540a70f299e54920dcbb58150d99cc3dbbace..61336fc6262a6385a0c3e824acc0833a67de0c94 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -6,12 +6,24 @@ const assets = [
+         label: 'ETH'
+     }
+ ];
++// Rootstock derivation paths — see https://dev.rootstock.io/concepts/account-based-addresses/#derivation-path-info
++const ROOTSTOCK_MAINNET_PATH = "m/44'/137'/0'/0";
++const ROOTSTOCK_TESTNET_PATH = "m/44'/37310'/0'/0";
+ const DEFAULT_BASE_PATHS = [
++    {
++        label: 'Rootstock',
++        value: ROOTSTOCK_MAINNET_PATH
++    },
++    {
++        label: 'Rootstock Testnet',
++        value: ROOTSTOCK_TESTNET_PATH
++    },
+     {
+         label: 'Ethereum Mainnet',
+         value: TREZOR_DEFAULT_PATH
+     }
+ ];
++const isBasePath = (derivationPath) => DEFAULT_BASE_PATHS.some(({ value }) => value === derivationPath);
+ const getAccount = async ({ publicKey, chainCode, path }, asset, index, provider) => {
+     //@ts-ignore
+     const { default: HDKey } = await import('hdkey');
+@@ -98,7 +110,7 @@ function trezor(options) {
+                     currentChain = chains.find(({ id }) => id === chainId) || currentChain;
+                     ethersProvider = new StaticJsonRpcProvider(currentChain.rpcUrl);
+                     const { publicKey, chainCode, path } = await getPublicKey(derivationPath);
+-                    if (derivationPath !== TREZOR_DEFAULT_PATH) {
++                    if (!isBasePath(derivationPath)) {
+                         const address = await getAddress(path);
+                         return [
+                             {
+@@ -142,7 +154,7 @@ function trezor(options) {
+                         if (!result.success) {
+                             throw new Error(errorMsg);
+                         }
+-                        return result.payload.address;
++                        return ethUtil.toChecksumAddress(result.payload.address.toLowerCase());
+                     }
+                     catch (error) {
+                         console.error(error);
+@@ -282,8 +294,8 @@ function trezor(options) {
+                             hex: true
+                         }).then((response) => {
+                             if (response.success) {
+-                                if (response.payload.address !==
+-                                    ethUtil.toChecksumAddress(address)) {
++                                if (response.payload.address.toLowerCase() !==
++                                    address.toLowerCase()) {
+                                     reject(new Error('signature doesnt match the right address'));
+                                 }
+                                 const signature = `0x${response.payload.signature}`;
