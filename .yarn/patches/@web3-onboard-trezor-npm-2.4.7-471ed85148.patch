@@ -1,5 +1,5 @@
 diff --git a/dist/index.js b/dist/index.js
-index 559540a70f299e54920dcbb58150d99cc3dbbace..61336fc6262a6385a0c3e824acc0833a67de0c94 100644
+index 559540a70f299e54920dcbb58150d99cc3dbbace..8dd33a7ef9c80020e33d65a8a2787ab6007d4ae2 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -6,12 +6,24 @@ const assets = [
@@ -56,3 +56,49 @@ index 559540a70f299e54920dcbb58150d99cc3dbbace..61336fc6262a6385a0c3e824acc0833a
                                      reject(new Error('signature doesnt match the right address'));
                                  }
                                  const signature = `0x${response.payload.signature}`;
+@@ -296,6 +308,34 @@ function trezor(options) {
+                         });
+                     });
+                 }
++                // Safe signs off-chain exclusively via EIP-712 (eth_signTypedData_v4)
++                async function signTypedData(address, typedData) {
++                    if (!Array.isArray(accounts) || !accounts.length)
++                        throw new Error('No account selected. Must call eth_requestAccounts first.');
++                    const accountToSign = accounts.find(account => account.address.toLowerCase() === address.toLowerCase()) || accounts[0];
++                    const data = typeof typedData === 'string' ? JSON.parse(typedData) : typedData;
++                    const { _TypedDataEncoder } = await import('@ethersproject/hash');
++                    const { EIP712Domain, ...types } = data.types;
++                    const response = await TrezorConnect.ethereumSignTypedData({
++                        path: accountToSign.derivationPath,
++                        data,
++                        metamask_v4_compat: true,
++                        // Hashes are required by Trezor Model One, which cannot parse EIP-712 on-device.
++                        // For SafeTx, newer models display message_hash for comparison with the UI.
++                        domain_separator_hash: _TypedDataEncoder.hashDomain(data.domain),
++                        message_hash: data.primaryType === 'EIP712Domain'
++                            ? undefined
++                            : _TypedDataEncoder.from(types).hash(data.message)
++                    });
++                    if (!response.success) {
++                        throw new Error((response.payload && response.payload.error) ||
++                            'There was an error signing typed data');
++                    }
++                    if (response.payload.address.toLowerCase() !== accountToSign.address.toLowerCase()) {
++                        throw new Error('signature doesnt match the right address');
++                    }
++                    return response.payload.signature;
++                }
+                 const trezorProvider = getHardwareWalletProvider(() => currentChain.rpcUrl || '');
+                 const provider = createEIP1193Provider(trezorProvider, {
+                     eth_requestAccounts: async () => {
+@@ -344,7 +384,9 @@ function trezor(options) {
+                         eventEmitter.emit('chainChanged', currentChain.id);
+                         return null;
+                     },
+-                    eth_signTypedData: null,
++                    eth_signTypedData: async ({ params: [address, typedData] }) => signTypedData(address, typedData),
++                    eth_signTypedData_v3: async ({ params: [address, typedData] }) => signTypedData(address, typedData),
++                    eth_signTypedData_v4: async ({ params: [address, typedData] }) => signTypedData(address, typedData),
+                     wallet_addEthereumChain: null
+                 });
+                 provider.on = eventEmitter.on.bind(eventEmitter);
